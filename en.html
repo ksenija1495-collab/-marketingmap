@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Which Marketer Do You Need? — Shmelco</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F8F7ED; --surface: #ffffff; --surface-2: #f3f0e4;
+    --border: #E4D0B9; --border-hover: #c9ad8e;
+    --text: #462918; --text-dim: #7a5c48; --text-muted: #a89080;
+    --accent-acquisition: #a87c4f; --accent-conversion: #8b6b5a;
+    --accent-content: #6b8f71; --accent-retention: #7a8c5e;
+    --accent-growth: #b5704d; --accent-architecture: #5e6b52;
+    --accent-brand: #9b7a6a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.65; font-size: 15px;
+    -webkit-font-smoothing: antialiased; font-feature-settings: 'kern' 1, 'liga' 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  .hero { padding: 72px 0 36px; text-align: center; }
+  .hero .brand-label { display: inline-block; font-family: 'Inter', sans-serif; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.28em; color: var(--text-muted); margin-bottom: 20px; padding: 7px 18px; border: 1px solid var(--border); border-radius: 40px; background: var(--surface); font-weight: 500; }
+  .hero h1 { font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; font-size: 2.8rem; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 14px; color: var(--text); line-height: 1.15; }
+  .hero .subtitle { font-size: 0.95rem; color: var(--text-dim); max-width: 540px; margin: 0 auto; line-height: 1.7; }
+  .nav-tabs { display: flex; gap: 6px; justify-content: center; margin: 36px 0 40px; flex-wrap: wrap; }
+  .nav-tab { padding: 9px 18px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); cursor: pointer; font-size: 0.86rem; font-weight: 500; transition: all 0.2s; }
+  .nav-tab:hover { border-color: var(--border-hover); color: var(--text); }
+  .nav-tab.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .section { display: none; } .section.active { display: block; }
+  .section-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.7rem; font-weight: 600; margin-bottom: 8px; letter-spacing: -0.01em; line-height: 1.2; }
+  .section-desc { color: var(--text-dim); margin-bottom: 32px; font-size: 0.88rem; line-height: 1.7; }
+
+  /* DIAGNOSTIC */
+  .diagnostic-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-bottom: 40px; }
+  .diag-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; cursor: pointer; transition: all 0.25s; box-shadow: 0 1px 3px rgba(70,41,24,0.04); }
+  .diag-card:hover { border-color: var(--border-hover); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(70,41,24,0.07); }
+  .diag-card.selected { transform: translateY(-2px); }
+  .diag-card.selected { border-color: var(--text); box-shadow: 0 2px 12px rgba(70,41,24,0.08); }
+  .diag-card .icon { font-size: 1.5rem; margin-bottom: 10px; }
+  .diag-card h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; line-height: 1.3; }
+  .diag-card p { font-size: 0.83rem; color: var(--text-dim); line-height: 1.5; }
+  .diag-result { display: none; background: var(--surface); border-radius: 14px; padding: 28px; margin-bottom: 40px; border: 1px solid var(--border); animation: fadeIn 0.3s ease; box-shadow: 0 2px 8px rgba(70,41,24,0.05); }
+  .diag-result.visible { display: block; }
+  .diag-result .result-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .diag-result .result-icon { font-size: 1.8rem; }
+  .diag-result .result-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.35rem; font-weight: 600; line-height: 1.25; }
+  .diag-result .result-subtitle { font-size: 0.85rem; color: var(--text-dim); }
+  .diag-result .result-roles { margin-bottom: 16px; }
+  .diag-result .result-roles h4 { font-family: 'Inter', sans-serif; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 10px; font-weight: 500; }
+  .role-link { display: inline-block; padding: 6px 14px; margin: 3px 4px 3px 0; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+  .role-link:hover { border-color: var(--border-hover); background: var(--surface-2); box-shadow: 0 1px 4px rgba(70,41,24,0.06); }
+  .diag-result .result-warning { margin-top: 16px; padding: 14px; background: rgba(181,112,77,0.08); border-radius: 8px; border: 1px solid rgba(181,112,77,0.18); font-size: 0.83rem; color: var(--accent-growth); }
+  .diag-result .result-warning strong { color: #96533a; }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding: 16px 0 40px; }
+  .timeline::before { content: ''; position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+  .timeline-item { position: relative; padding-left: 64px; margin-bottom: 16px; }
+  .timeline-dot { position: absolute; left: 16px; top: 4px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); background: var(--bg); z-index: 1; }
+  .timeline-item[data-color="orange"] .timeline-dot { border-color: var(--accent-acquisition); }
+  .timeline-item[data-color="purple"] .timeline-dot { border-color: var(--accent-conversion); }
+  .timeline-item[data-color="green"] .timeline-dot { border-color: var(--accent-retention); }
+  .timeline-item[data-color="red"] .timeline-dot { border-color: var(--accent-growth); }
+  .timeline-item[data-color="yellow"] .timeline-dot { border-color: var(--accent-architecture); }
+  .timeline-item[data-color="gray"] .timeline-dot { border-color: var(--text-muted); }
+  .tl-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; transition: all 0.2s; box-shadow: 0 1px 3px rgba(70,41,24,0.04); }
+  .tl-card:hover { border-color: var(--border-hover); box-shadow: 0 3px 10px rgba(70,41,24,0.06); }
+  .timeline-stage { font-family: 'Inter', sans-serif; font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-muted); margin-bottom: 4px; font-weight: 500; }
+  .timeline-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; font-weight: 600; margin-bottom: 6px; line-height: 1.3; }
+  .timeline-desc { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 12px; max-width: 600px; }
+  .tl-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .tl-tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+  .tl-tag:hover { opacity: 0.8; }
+  .tl-tag.acquisition { background: rgba(168,124,79,0.12); color: var(--accent-acquisition); }
+  .tl-tag.conversion { background: rgba(139,107,90,0.12); color: var(--accent-conversion); }
+  .tl-tag.content { background: rgba(107,143,113,0.12); color: var(--accent-content); }
+  .tl-tag.retention { background: rgba(122,140,94,0.12); color: var(--accent-retention); }
+  .tl-tag.growth { background: rgba(181,112,77,0.12); color: var(--accent-growth); }
+  .tl-tag.architecture { background: rgba(94,107,82,0.12); color: var(--accent-architecture); }
+  .tl-tag.brand { background: rgba(155,122,106,0.12); color: var(--accent-brand); }
+  .tl-tag.founder { background: rgba(168,144,128,0.12); color: var(--text-dim); cursor: default; }
+  .tl-team { padding-top: 14px; border-top: 1px solid var(--border); }
+  .tl-team-label { font-family: 'Inter', sans-serif; font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
+  .tl-team-list { list-style: none; }
+  .tl-team-list li { font-size: 0.82rem; color: var(--text-dim); padding: 2px 0 2px 14px; position: relative; }
+  .tl-team-list li::before { content: '·'; position: absolute; left: 0; font-weight: 700; color: var(--text-muted); }
+  .tl-team-list li em { font-style: normal; opacity: 0.7; font-size: 0.78rem; }
+  .timeline-note { margin-top: 10px; font-size: 0.78rem; color: var(--text-muted); font-style: italic; }
+
+  /* BUDGET BLOCK in timeline */
+  .tl-budget { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .tl-budget-col h5 { font-family: 'Inter', sans-serif; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; }
+  .tl-budget-col .budget-val { font-size: 0.92rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .tl-budget-col .budget-note { font-size: 0.76rem; color: var(--text-dim); }
+  .tl-budget-col ul { list-style: none; }
+  .tl-budget-col li { font-size: 0.78rem; color: var(--text-dim); padding: 1px 0 1px 10px; position: relative; }
+  .tl-budget-col li::before { content: '·'; position: absolute; left: 0; color: var(--text-muted); }
+  .proj-tag { display: inline-block; font-size: 0.68rem; padding: 1px 6px; border-radius: 3px; margin-left: 4px; font-weight: 600; }
+  .proj-tag.staff { background: rgba(107,143,113,0.15); color: var(--accent-content); }
+  .proj-tag.freelance { background: rgba(168,124,79,0.15); color: var(--accent-acquisition); }
+  .proj-tag.optional { background: rgba(168,144,128,0.12); color: var(--text-muted); }
+
+  /* ROLES */
+  .role-group-tabs { display: flex; gap: 6px; margin-bottom: 28px; flex-wrap: wrap; }
+  .role-group-tab { display: flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: all 0.2s; }
+  .role-group-tab:hover { border-color: var(--border-hover); color: var(--text); }
+  .role-group-tab.active { background: var(--surface); color: var(--text); border-color: var(--text); box-shadow: 0 1px 4px rgba(70,41,24,0.06); }
+  .role-group { display: none; animation: fadeIn 0.25s ease; } .role-group.active { display: block; }
+  .ind-role { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; margin-bottom: 16px; transition: all 0.2s; box-shadow: 0 1px 3px rgba(70,41,24,0.04); }
+  .ind-role:hover { border-color: var(--border-hover); box-shadow: 0 3px 10px rgba(70,41,24,0.06); }
+  .ind-role.flash { border-color: var(--accent-acquisition); box-shadow: 0 0 0 3px rgba(168,124,79,0.15); transition: all 0.4s; }
+  .ind-role-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .ind-role-name { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; font-weight: 600; line-height: 1.25; }
+  .ind-role-function { font-size: 0.78rem; color: var(--text-muted); }
+  .ind-role-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .ind-role-col h4 { font-family: 'Inter', sans-serif; font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; font-weight: 600; }
+  .ind-role-col.col-skills h4 { color: var(--accent-content); }
+  .ind-role-col.col-tasks h4 { color: var(--accent-acquisition); }
+  .ind-role-col.col-hire h4 { color: var(--accent-conversion); }
+  .ind-role-col ul { list-style: none; }
+  .ind-role-col li { font-size: 0.83rem; color: var(--text-dim); padding: 3px 0 3px 12px; position: relative; }
+  .ind-role-col li::before { content: '·'; position: absolute; left: 0; font-weight: 700; color: var(--text-muted); }
+
+  /* BUSINESS TYPE CARDS */
+  .biz-tabs { display: flex; gap: 6px; margin-bottom: 28px; flex-wrap: wrap; }
+  .biz-tab { padding: 7px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: all 0.2s; }
+  .biz-tab:hover { border-color: var(--border-hover); color: var(--text); }
+  .biz-tab.active { background: var(--surface); color: var(--text); border-color: var(--text); box-shadow: 0 1px 4px rgba(70,41,24,0.06); }
+  .biz-page { display: none; animation: fadeIn 0.25s ease; } .biz-page.active { display: block; }
+  .biz-header { margin-bottom: 24px; }
+  .biz-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.4rem; font-weight: 600; margin-bottom: 6px; line-height: 1.25; }
+  .biz-subtitle { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+  .biz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .biz-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(70,41,24,0.04); }
+  .biz-card h4 { font-family: 'Inter', sans-serif; font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; font-weight: 600; }
+  .biz-card.critical h4 { color: var(--accent-growth); }
+  .biz-card.secondary h4 { color: var(--text-dim); }
+  .biz-card.focus h4 { color: var(--accent-content); }
+  .biz-card.mistakes h4 { color: #96533a; }
+  .biz-card.team h4 { color: var(--accent-acquisition); }
+  .biz-card ul { list-style: none; }
+  .biz-card li { font-size: 0.83rem; color: var(--text-dim); padding: 3px 0 3px 12px; position: relative; }
+  .biz-card li::before { content: '·'; position: absolute; left: 0; font-weight: 700; color: var(--text-muted); }
+  .biz-full { grid-column: 1 / -1; }
+
+  /* PRE-DIAGNOSTIC */
+  .pre-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .pre-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(70,41,24,0.04); }
+  .pre-card p { font-size: 0.88rem; margin-bottom: 12px; font-weight: 500; }
+  .pre-btns { display: flex; gap: 8px; }
+  .pre-btn { padding: 7px 18px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 0.82rem; font-weight: 500; transition: all 0.2s; font-family: 'Inter', sans-serif; color: var(--text-dim); }
+  .pre-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .pre-btn.selected-yes { background: rgba(107,143,113,0.12); border-color: var(--accent-content); color: var(--accent-content); }
+  .pre-btn.selected-no { background: rgba(181,112,77,0.08); border-color: var(--accent-growth); color: var(--accent-growth); }
+  .first-hire-block { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; margin-top: 24px; box-shadow: 0 2px 8px rgba(70,41,24,0.05); }
+  .first-hire-block h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.25rem; font-weight: 600; margin-bottom: 14px; }
+  .red-flags { margin-top: 24px; }
+  .red-flag { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+  .red-flag:last-child { border-bottom: none; }
+  .red-flag-icon { color: var(--accent-growth); font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+  .red-flag-text { color: var(--text-dim); }
+  .red-flag-text strong { color: var(--text); }
+  .salary-tag { display: inline-block; font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; background: rgba(168,124,79,0.1); color: var(--accent-acquisition); font-weight: 600; margin-left: 6px; }
+  @media (max-width: 768px) { .pre-grid { grid-template-columns: 1fr; } }
+
+  /* BOTTOM */
+  .info-block { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(70,41,24,0.04); }
+  .info-block h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.25rem; font-weight: 600; margin-bottom: 14px; line-height: 1.25; }
+  .error-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin-bottom: 10px; font-size: 0.85rem; }
+  .err-action { color: var(--text-dim); } .err-arrow { color: var(--text-muted); } .err-result { color: #96533a; }
+  .logic-list { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .logic-list p { font-size: 0.85rem; font-weight: 600; margin-bottom: 10px; }
+  .logic-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 0.88rem; }
+  .logic-row .la { color: var(--text-dim); min-width: 180px; } .logic-row .lw { font-weight: 600; cursor: pointer; } .logic-row .lw:hover { opacity: 0.8; }
+  .footer { text-align: center; padding: 40px 0; color: var(--text-muted); font-size: 0.72rem; border-top: 1px solid var(--border); margin-top: 48px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 2rem; } .section-title { font-size: 1.35rem; } .ind-role-grid { grid-template-columns: 1fr; }
+    .tl-budget { grid-template-columns: 1fr; } .biz-grid { grid-template-columns: 1fr; }
+    .error-row { grid-template-columns: 1fr; gap: 2px; } .err-arrow { display: none; }
+    .timeline::before { left: 16px; } .timeline-item { padding-left: 48px; } .timeline-dot { left: 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="hero">
+    <div class="brand-label">Shmelco · product atelier</div>
+    <h1>Which Marketer Do You Actually Need?</h1>
+    <p class="subtitle">"Just a marketer" doesn't work. First understand which function is broken — then hire for it.</p>
+  </div>
+
+  <div class="nav-tabs">
+    <div class="nav-tab active" data-tab="pre">Do I Need a Marketer?</div>
+    <div class="nav-tab" data-tab="diagnostic">Diagnostic</div>
+    <div class="nav-tab" data-tab="stages">Stages</div>
+    <div class="nav-tab" data-tab="roles">Roles</div>
+    <div class="nav-tab" data-tab="biz">By Business Type</div>
+  </div>
+
+  <!-- ===================== PRE-DIAGNOSTIC ===================== -->
+  <div class="section active" id="sec-pre">
+    <div class="section-title">Do You Actually Need a Marketer Right Now?</div>
+    <div class="section-desc">Answer 4 questions — find out if you should hire now or do something else first.</div>
+    <div class="pre-grid">
+      <div class="pre-card"><p>Do you have at least 5 paying customers?</p><div class="pre-btns"><button class="pre-btn" onclick="answerPre(0,true)">Yes</button><button class="pre-btn" onclick="answerPre(0,false)">No</button></div></div>
+      <div class="pre-card"><p>Can you explain in one sentence why people buy from you?</p><div class="pre-btns"><button class="pre-btn" onclick="answerPre(1,true)">Yes</button><button class="pre-btn" onclick="answerPre(1,false)">No</button></div></div>
+      <div class="pre-card"><p>Do you have at least one working sales funnel?</p><div class="pre-btns"><button class="pre-btn" onclick="answerPre(2,true)">Yes</button><button class="pre-btn" onclick="answerPre(2,false)">No</button></div></div>
+      <div class="pre-card"><p>Can you allocate $1–2K/mo on marketing for at least 3 months?</p><div class="pre-btns"><button class="pre-btn" onclick="answerPre(3,true)">Yes</button><button class="pre-btn" onclick="answerPre(3,false)">No</button></div></div>
+    </div>
+    <div class="diag-result" id="pre-result"></div>
+  </div>
+
+  <!-- ===================== DIAGNOSTIC ===================== -->
+  <div class="section" id="sec-diagnostic">
+    <div class="section-title">What's broken right now?</div>
+    <div class="section-desc">Pick your situation — get a specific answer: who you need and why.</div>
+    <div class="diagnostic-grid">
+      <div class="diag-card" data-role="acquisition" onclick="showDiag(this)"><div class="icon">🚀</div><h3>Not enough leads</h3><p>Product exists, conversion works, but not enough people coming in.</p></div>
+      <div class="diag-card" data-role="conversion" onclick="showDiag(this)"><div class="icon">🧠</div><h3>Traffic but no sales</h3><p>People visit but don't understand the value.</p></div>
+      <div class="diag-card" data-role="content" onclick="showDiag(this)"><div class="icon">📣</div><h3>No trust / long decision cycle</h3><p>No inbound leads. People take forever to decide.</p></div>
+      <div class="diag-card" data-role="retention" onclick="showDiag(this)"><div class="icon">🔁</div><h3>Customers don't come back</h3><p>No repeat sales. Revenue leaking.</p></div>
+      <div class="diag-card" data-role="growth" onclick="showDiag(this)"><div class="icon">📈</div><h3>Chaotic growth</h3><p>Lots of activity, no system.</p></div>
+      <div class="diag-card" data-role="architecture" onclick="showDiag(this)"><div class="icon">🧩</div><h3>Everything exists, nothing works together</h3><p>Chaos. Many people/channels — no system.</p></div>
+    </div>
+    <div class="diag-result" id="result-acquisition"><div class="result-header"><div class="result-icon">🚀</div><div><div class="result-title">Problem: Acquisition</div><div class="result-subtitle">Need more traffic and leads while maintaining unit economics</div></div></div><div class="result-roles"><h4>You need one of these specialists:</h4><span class="role-link" onclick="goToRole('performance')">Performance Marketer</span><span class="role-link" onclick="goToRole('seo')">SEO Specialist</span><span class="role-link" onclick="goToRole('affiliate')">Affiliate Manager</span></div><div class="result-warning"><strong>When NOT to hire:</strong> no offer / positioning, no conversion.</div></div>
+    <div class="diag-result" id="result-conversion"><div class="result-header"><div class="result-icon">🧠</div><div><div class="result-title">Problem: Conversion & Messaging</div><div class="result-subtitle">People come but don't buy</div></div></div><div class="result-roles"><h4>You need one of these specialists:</h4><span class="role-link" onclick="goToRole('pmm')">Product Marketing Manager</span><span class="role-link" onclick="goToRole('brand')">Brand Strategist</span><span class="role-link" onclick="goToRole('copywriter')">Copywriter / Messaging</span><span class="role-link" onclick="goToRole('cro')">CRO / UX</span></div><div class="result-warning"><strong>When NOT to hire:</strong> no traffic, no product, no demand.</div></div>
+    <div class="diag-result" id="result-content"><div class="result-header"><div class="result-icon">📣</div><div><div class="result-title">Problem: Trust & Inbound</div><div class="result-subtitle">No inbound leads, audience isn't warmed up</div></div></div><div class="result-roles"><h4>You need one of these specialists:</h4><span class="role-link" onclick="goToRole('content-marketer')">Content Marketer</span><span class="role-link" onclick="goToRole('smm')">Social Media Manager</span><span class="role-link" onclick="goToRole('pr')">PR / Media</span></div><div class="result-warning"><strong>When NOT to hire:</strong> no positioning, no offer.</div></div>
+    <div class="diag-result" id="result-retention"><div class="result-header"><div class="result-icon">🔁</div><div><div class="result-title">Problem: Retention</div><div class="result-subtitle">Customers don't come back</div></div></div><div class="result-roles"><h4>You need one of these specialists:</h4><span class="role-link" onclick="goToRole('crm')">CRM / Lifecycle</span><span class="role-link" onclick="goToRole('email')">Email Marketer</span><span class="role-link" onclick="goToRole('community')">Community</span></div><div class="result-warning"><strong>When NOT to hire:</strong> no customer flow, no database.</div></div>
+    <div class="diag-result" id="result-growth"><div class="result-header"><div class="result-icon">📈</div><div><div class="result-title">Problem: Growth System</div><div class="result-subtitle">Growth is unstable, no predictability</div></div></div><div class="result-roles"><h4>You need:</h4><span class="role-link" onclick="goToRole('growth-marketer')">Growth / Head of Growth</span></div><div class="result-warning"><strong>When NOT to hire:</strong> no baseline sales, no data.</div></div>
+    <div class="diag-result" id="result-architecture"><div class="result-header"><div class="result-icon">🧩</div><div><div class="result-title">Problem: Architecture</div><div class="result-subtitle">Everything exists but nothing works together</div></div></div><div class="result-roles"><h4>You need:</h4><span class="role-link" onclick="goToRole('cmo')">CMO / VP of Marketing</span></div><div class="result-warning"><strong>When NOT to hire:</strong> early stage, no stable sales.</div></div>
+
+    <div class="first-hire-block">
+      <h3>👤 Your First Marketing Hire</h3>
+      <p style="font-size:0.88rem;color:var(--text-dim);margin-bottom:16px">In 80% of cases, the first hire is a <strong style="cursor:pointer" onclick="goToRole('pmm')">PMM (Product Marketing Manager)</strong>. Not a performance marketer, not an SMM, not a "jack-of-all-trades marketer."</p>
+      <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:4px"><strong>Why:</strong> without packaging (positioning, offer, messaging), any traffic bleeds money. A PMM turns "we have a good product" into "here's exactly why you should buy this."</p>
+      <p style="font-size:0.85rem;color:var(--text-dim)"><strong>Exceptions:</strong> if conversion already works and you just need more people — then Performance. If it's a long sales cycle with no trust — Content Marketer.</p>
+    </div>
+
+    <div class="first-hire-block red-flags" style="margin-top:16px">
+      <h3>🚩 Hiring Red Flags</h3>
+      <div class="red-flag"><div class="red-flag-icon">⚠️</div><div class="red-flag-text"><strong>"I'll increase your reach"</strong> — talks vanity metrics, not revenue. Ask: "How does this affect the bottom line?"</div></div>
+      <div class="red-flag"><div class="red-flag-icon">⚠️</div><div class="red-flag-text"><strong>Doesn't ask about the product or audience</strong> — an executor, not a strategist. Good marketers start with questions, not proposals.</div></div>
+      <div class="red-flag"><div class="red-flag-icon">⚠️</div><div class="red-flag-text"><strong>"Results in 2 weeks"</strong> — doesn't understand marketing cycles. Realistic timeline for first results: 2–3 months.</div></div>
+      <div class="red-flag"><div class="red-flag-icon">⚠️</div><div class="red-flag-text"><strong>Portfolio of only "pretty" projects</strong> — ask for numbers: conversion, CAC, ROI. No numbers = no results.</div></div>
+      <div class="red-flag"><div class="red-flag-icon">⚠️</div><div class="red-flag-text"><strong>"I do everything"</strong> — a generalist is fine at early stages. But at stage 2+, you need specialists.</div></div>
+    </div>
+  </div>
+
+  <!-- ===================== STAGES ===================== -->
+  <div class="section" id="sec-stages">
+    <div class="section-title">Marketers by Growth Stage</div>
+    <div class="section-desc">Each stage needs its own team and budget. Hiring for the "next stage" before closing the current one is the #1 mistake.</div>
+    <div class="timeline">
+
+      <!-- STAGE 0 -->
+      <div class="timeline-item" data-color="gray">
+        <div class="timeline-dot"></div>
+        <div class="tl-card">
+          <div class="timeline-stage">Stage 0</div>
+          <div class="timeline-title">Zero → First Revenue</div>
+          <div class="timeline-desc">Founder-led sales, first hypotheses, manual marketing. In parallel — brand work and messaging foundation.</div>
+          <div class="tl-tags">
+            <span class="tl-tag founder">Founder does it</span>
+            <span class="tl-tag brand" onclick="goToRole('brand')">✨ Brand + Messaging</span>
+          </div>
+          <div class="tl-team">
+            <div class="tl-team-label">Minimum team</div>
+            <ul class="tl-team-list">
+              <li>Founder <em>— sales, positioning</em> <span class="proj-tag staff">self</span></li>
+              <li>Designer / developer <em>— landing page, visuals</em> <span class="proj-tag freelance">project</span></li>
+              <li>Copywriter <em>— copy, packaging</em> <span class="proj-tag freelance">project</span></li>
+            </ul>
+          </div>
+          <div class="tl-budget">
+            <div class="tl-budget-col"><h5>Marketing payroll</h5><div class="budget-val">$0 – $500/mo</div><div class="budget-note">One-off contractors only</div></div>
+            <div class="tl-budget-col"><h5>Full-time</h5><div class="budget-val">0 people</div><div class="budget-note">No marketer needed</div></div>
+            <div class="tl-budget-col"><h5>Project-based</h5><ul><li>Landing page: $300–$800</li><li>Logo + visuals: $200–$600</li><li>Copy / packaging: $150–$400</li></ul></div>
+          </div>
+          <div class="timeline-note">Don't hire a full-time marketer. But start building the brand — it's the foundation.</div>
+        </div>
+      </div>
+
+      <!-- STAGE 1 -->
+      <div class="timeline-item" data-color="purple">
+        <div class="timeline-dot"></div>
+        <div class="tl-card">
+          <div class="timeline-stage">Stage 1</div>
+          <div class="timeline-title">First Sales → Repeatability</div>
+          <div class="timeline-desc">Understand: who buys, why they buy, how to package it.</div>
+          <div class="tl-tags">
+            <span class="tl-tag conversion" onclick="goToRole('pmm')">🧠 PMM</span>
+            <span class="tl-tag content" onclick="goToRole('content-marketer')">📣 Content</span>
+            <span class="tl-tag brand" onclick="goToRole('brand')">✨ Brand</span>
+          </div>
+          <div class="tl-team">
+            <div class="tl-team-label">Minimum team</div>
+            <ul class="tl-team-list">
+              <li onclick="goToRole('pmm')" style="cursor:pointer">PMM / positioning marketer <span class="proj-tag staff">full-time</span></li>
+              <li onclick="goToRole('content-marketer')" style="cursor:pointer">Content manager <span class="proj-tag freelance">project</span></li>
+              <li>Founder <em>— sales and messaging</em> <span class="proj-tag staff">self</span></li>
+            </ul>
+          </div>
+          <div class="tl-budget">
+            <div class="tl-budget-col"><h5>Marketing payroll</h5><div class="budget-val">$4K – $8K/mo</div><div class="budget-note">1 full-time + freelancers</div></div>
+            <div class="tl-budget-col"><h5>Full-time</h5><div class="budget-val">1 person</div><div class="budget-note">PMM — first hire</div></div>
+            <div class="tl-budget-col"><h5>Project-based</h5><ul><li>SMM / content: $1K–$2K/mo</li><li>Brand strategy: $2K–$5K one-off</li><li>Design: per project</li></ul></div>
+          </div>
+          <div class="timeline-note">First marketer = PMM. Add content on a project basis.</div>
+        </div>
+      </div>
+
+      <!-- STAGE 2 -->
+      <div class="timeline-item" data-color="orange">
+        <div class="timeline-dot"></div>
+        <div class="tl-card">
+          <div class="timeline-stage">Stage 2</div>
+          <div class="timeline-title">Conversion works → Need more leads</div>
+          <div class="timeline-desc">Working model exists — time to scale the pipeline.</div>
+          <div class="tl-tags">
+            <span class="tl-tag acquisition" onclick="goToRole('performance')">🚀 Performance</span>
+            <span class="tl-tag acquisition" onclick="goToRole('seo')">SEO</span>
+            <span class="tl-tag conversion" onclick="goToRole('pmm')">🧠 PMM</span>
+            <span class="tl-tag content" onclick="goToRole('content-marketer')">📣 Content</span>
+          </div>
+          <div class="tl-team">
+            <div class="tl-team-label">Minimum team</div>
+            <ul class="tl-team-list">
+              <li onclick="goToRole('performance')" style="cursor:pointer">Performance marketer <span class="proj-tag staff">full-time</span></li>
+              <li onclick="goToRole('pmm')" style="cursor:pointer">PMM <span class="proj-tag staff">full-time</span></li>
+              <li onclick="goToRole('content-marketer')" style="cursor:pointer">Content manager <span class="proj-tag staff">full-time</span></li>
+              <li onclick="goToRole('seo')" style="cursor:pointer">SEO specialist <span class="proj-tag freelance">project</span></li>
+            </ul>
+          </div>
+          <div class="tl-budget">
+            <div class="tl-budget-col"><h5>Marketing payroll</h5><div class="budget-val">$12K – $25K/mo</div><div class="budget-note">2–3 full-time + contractors</div></div>
+            <div class="tl-budget-col"><h5>Full-time</h5><div class="budget-val">2–3 people</div><div class="budget-note">Performance + PMM + Content</div></div>
+            <div class="tl-budget-col"><h5>Project-based</h5><ul><li>SEO: $1.5K–$3K/mo</li><li>Creative design: $1K–$2K/mo</li><li>Analytics: per project</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAGE 3 -->
+      <div class="timeline-item" data-color="green">
+        <div class="timeline-dot"></div>
+        <div class="tl-card">
+          <div class="timeline-stage">Stage 3</div>
+          <div class="timeline-title">Growing customer base → Revenue leaking</div>
+          <div class="timeline-desc">Customers come in but don't come back.</div>
+          <div class="tl-tags">
+            <span class="tl-tag retention" onclick="goToRole('crm')">🔁 CRM</span>
+            <span class="tl-tag retention" onclick="goToRole('email')">Email</span>
+            <span class="tl-tag acquisition" onclick="goToRole('performance')">🚀 Performance</span>
+            <span class="tl-tag brand" onclick="goToRole('brand')">✨ Brand</span>
+          </div>
+          <div class="tl-team">
+            <div class="tl-team-label">Minimum team</div>
+            <ul class="tl-team-list">
+              <li onclick="goToRole('crm')" style="cursor:pointer">CRM / Email marketer <span class="proj-tag staff">full-time</span></li>
+              <li onclick="goToRole('performance')" style="cursor:pointer">Performance marketer <span class="proj-tag staff">full-time</span></li>
+              <li onclick="goToRole('pmm')" style="cursor:pointer">PMM <span class="proj-tag staff">full-time</span></li>
+              <li onclick="goToRole('content-marketer')" style="cursor:pointer">Content manager <span class="proj-tag staff">full-time</span></li>
+              <li onclick="goToRole('brand')" style="cursor:pointer">Brand manager <span class="proj-tag optional">optional</span></li>
+            </ul>
+          </div>
+          <div class="tl-budget">
+            <div class="tl-budget-col"><h5>Marketing payroll</h5><div class="budget-val">$25K – $45K/mo</div><div class="budget-note">3–5 full-time</div></div>
+            <div class="tl-budget-col"><h5>Full-time</h5><div class="budget-val">3–5 people</div><div class="budget-note">+ CRM/Email on top of previous</div></div>
+            <div class="tl-budget-col"><h5>Project-based</h5><ul><li>Brand strategy: $5K–$15K one-off</li><li>CRM system integration: $2K–$8K</li><li>Design / video: per project</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAGE 4 -->
+      <div class="timeline-item" data-color="red">
+        <div class="timeline-dot"></div>
+        <div class="tl-card">
+          <div class="timeline-stage">Stage 4</div>
+          <div class="timeline-title">Lots of activity → No growth system</div>
+          <div class="timeline-desc">Stop "trying everything" and start growing systematically.</div>
+          <div class="tl-tags"><span class="tl-tag growth" onclick="goToRole('growth-marketer')">📈 Growth</span></div>
+          <div class="tl-team">
+            <div class="tl-team-label">Minimum team</div>
+            <ul class="tl-team-list">
+              <li onclick="goToRole('growth-marketer')" style="cursor:pointer">Head of Growth <span class="proj-tag staff">full-time</span></li>
+              <li>Analyst <span class="proj-tag staff">full-time</span></li>
+              <li>Performance team (2–3 people) <span class="proj-tag staff">full-time</span></li>
+              <li>CRM / Retention <span class="proj-tag staff">full-time</span></li>
+              <li>Content team (2 people) <span class="proj-tag staff">full-time</span></li>
+            </ul>
+          </div>
+          <div class="tl-budget">
+            <div class="tl-budget-col"><h5>Marketing payroll</h5><div class="budget-val">$50K – $100K/mo</div><div class="budget-note">6–9 people</div></div>
+            <div class="tl-budget-col"><h5>Full-time</h5><div class="budget-val">6–9 people</div><div class="budget-note">Full department</div></div>
+            <div class="tl-budget-col"><h5>Project-based</h5><ul><li>BI / analytics: setup $5K–$15K</li><li>Video production: per project</li><li>PR campaigns: per project</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAGE 5 -->
+      <div class="timeline-item" data-color="yellow">
+        <div class="timeline-dot"></div>
+        <div class="tl-card">
+          <div class="timeline-stage">Stage 5</div>
+          <div class="timeline-title">Business is growing → Chaos begins</div>
+          <div class="timeline-desc">Without systematic architecture, growth slows itself down. $5M–$10M+ revenue.</div>
+          <div class="tl-tags"><span class="tl-tag architecture" onclick="goToRole('cmo')">🧩 CMO</span></div>
+          <div class="tl-team">
+            <div class="tl-team-label">Minimum team</div>
+            <ul class="tl-team-list">
+              <li onclick="goToRole('cmo')" style="cursor:pointer">CMO <span class="proj-tag staff">full-time</span></li>
+              <li>Head of Growth <span class="proj-tag staff">full-time</span></li>
+              <li>Head of Acquisition <span class="proj-tag staff">full-time</span></li>
+              <li>Head of Content/Brand <span class="proj-tag staff">full-time</span></li>
+              <li>CRM / Retention lead <span class="proj-tag staff">full-time</span></li>
+              <li>Analytics team <span class="proj-tag staff">full-time</span></li>
+            </ul>
+          </div>
+          <div class="tl-budget">
+            <div class="tl-budget-col"><h5>Marketing payroll</h5><div class="budget-val">$120K – $300K+/mo</div><div class="budget-note">10–20+ people</div></div>
+            <div class="tl-budget-col"><h5>Full-time</h5><div class="budget-val">10–20+ people</div><div class="budget-note">Department with leads</div></div>
+            <div class="tl-budget-col"><h5>Project-based</h5><ul><li>Strategic consulting</li><li>Market research</li><li>Large-scale production</li></ul></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-block">
+      <h3 style="color: var(--accent-growth);">The #1 Mistake</h3>
+      <p style="color: var(--text-dim); font-size: 0.88rem; margin-bottom: 14px;">Hiring for the "next stage" before closing the current one:</p>
+      <div class="error-row"><span class="err-action">Running paid traffic without positioning</span><span class="err-arrow">→</span><span class="err-result">burning budget</span></div>
+      <div class="error-row"><span class="err-action">Building a brand without a product</span><span class="err-arrow">→</span><span class="err-result">beautiful emptiness</span></div>
+      <div class="error-row"><span class="err-action">Doing growth without data</span><span class="err-arrow">→</span><span class="err-result">guesswork</span></div>
+      <div class="logic-list">
+        <p>Simple logic:</p>
+        <div class="logic-row"><span class="la">Package the messaging</span><span class="lw" onclick="goToRole('pmm')" style="color:var(--accent-conversion)">→ PMM</span></div>
+        <div class="logic-row"><span class="la">Scale the pipeline</span><span class="lw" onclick="goToRole('performance')" style="color:var(--accent-acquisition)">→ Performance</span></div>
+        <div class="logic-row"><span class="la">Retain the revenue</span><span class="lw" onclick="goToRole('crm')" style="color:var(--accent-retention)">→ CRM</span></div>
+        <div class="logic-row"><span class="la">Grow systematically</span><span class="lw" onclick="goToRole('growth-marketer')" style="color:var(--accent-growth)">→ Growth</span></div>
+        <div class="logic-row"><span class="la">Build the system</span><span class="lw" onclick="goToRole('cmo')" style="color:var(--accent-architecture)">→ CMO</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== ROLES ===================== -->
+  <div class="section" id="sec-roles">
+    <div class="section-title">Marketing Roles</div>
+    <div class="section-desc">Each specific role: required skills, problems it solves, what to look for when hiring.</div>
+    <div class="role-group-tabs">
+      <div class="role-group-tab active" data-group="acquisition" onclick="switchGroup('acquisition')">🚀 Acquisition</div>
+      <div class="role-group-tab" data-group="conversion" onclick="switchGroup('conversion')">🧠 Conversion</div>
+      <div class="role-group-tab" data-group="content" onclick="switchGroup('content')">📣 Content</div>
+      <div class="role-group-tab" data-group="retention" onclick="switchGroup('retention')">🔁 Retention</div>
+      <div class="role-group-tab" data-group="growth" onclick="switchGroup('growth')">📈 Growth</div>
+      <div class="role-group-tab" data-group="architecture" onclick="switchGroup('architecture')">🧩 Architecture</div>
+    </div>
+
+    <div class="role-group active" id="group-acquisition">
+      <div class="ind-role" id="role-performance"><div class="ind-role-header"><div><div class="ind-role-name">Performance Marketer</div><div class="ind-role-function">Acquisition · paid traffic <span class="salary-tag">$5–8K/mo staff · $3–5K project</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Required skills</h4><ul><li>Set up and optimize campaigns (Meta, Google, LinkedIn, TikTok)</li><li>Analytics: UTM, attribution, end-to-end</li><li>Unit economics: CPL → CAC → ROI</li><li>Hypothesis testing: creatives, audiences, landing pages</li><li>Scale without losing efficiency</li></ul></div><div class="ind-role-col col-tasks"><h4>Problems solved</h4><ul><li>Stable lead flow</li><li>Reducing CAC</li><li>Testing new channels</li><li>Scaling budget with ROI</li><li>Ad budget management</li></ul></div><div class="ind-role-col col-hire"><h4>What to look for</h4><ul><li>Case studies: "reduced CAC from X to Y"</li><li>Experience with $5K+/mo budgets</li><li>Understanding of business economics</li><li>Hypothesis-driven approach</li><li>Ask: "What will you do in the first 2 weeks?"</li></ul></div></div></div>
+      <div class="ind-role" id="role-seo"><div class="ind-role-header"><div><div class="ind-role-name">SEO Specialist</div><div class="ind-role-function">Acquisition · organic traffic <span class="salary-tag">$4–7K/mo staff · $2–4K project</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Required skills</h4><ul><li>Keyword research and clustering</li><li>Technical optimization: speed, indexing</li><li>Content strategy for SEO</li><li>Link building</li><li>Search Console, Ahrefs / Semrush</li></ul></div><div class="ind-role-col col-tasks"><h4>Problems solved</h4><ul><li>Organic traffic growth</li><li>Top search rankings</li><li>Technical site optimization</li><li>Content plan for organic</li><li>Competitor analysis</li></ul></div><div class="ind-role-col col-hire"><h4>What to look for</h4><ul><li>Case studies with organic growth numbers</li><li>Technical side, not just keywords</li><li>Experience in a relevant niche</li><li>Strategic thinking</li><li>Ask: "What's the first step for our site?"</li></ul></div></div></div>
+      <div class="ind-role" id="role-affiliate"><div class="ind-role-header"><div><div class="ind-role-name">Affiliate / Partnership Manager</div><div class="ind-role-function">Acquisition · partner channel <span class="salary-tag">$5–7K/mo staff · project-based</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Required skills</h4><ul><li>Building partner networks</li><li>Negotiation and relationship management</li><li>Partner platforms and tracking</li><li>Incentive structures</li><li>Partner channel analytics</li></ul></div><div class="ind-role-col col-tasks"><h4>Problems solved</h4><ul><li>Partner channel from scratch</li><li>Finding and activating partners</li><li>Scaling sales through partners</li><li>Partner channel ROI</li><li>Referral programs</li></ul></div><div class="ind-role-col col-hire"><h4>What to look for</h4><ul><li>Network-building experience with numbers</li><li>Number of partners and sales volume</li><li>Negotiation skills</li><li>Understanding channel economics</li><li>Ask: "How do you find partners?"</li></ul></div></div></div>
+    </div>
+
+    <div class="role-group" id="group-conversion">
+      <div class="ind-role" id="role-pmm"><div class="ind-role-header"><div><div class="ind-role-name">Product Marketing Manager (PMM)</div><div class="ind-role-function">Conversion · positioning & packaging <span class="salary-tag">$6–10K/mo staff · $3–5K project</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Required skills</h4><ul><li>Customer research and JTBD interviews</li><li>Value proposition by segment</li><li>Packaging: landing pages, decks, offers</li><li>Positioning and differentiation</li><li>GTM strategy</li><li>Working with segments</li></ul></div><div class="ind-role-col col-tasks"><h4>Problems solved</h4><ul><li>Conversion rate growth</li><li>Positioning</li><li>Packaging for segments</li><li>Offers and value propositions</li><li>Product launches</li><li>Competitive analysis</li></ul></div><div class="ind-role-col col-hire"><h4>What to look for</h4><ul><li>Case studies: "conversion grew from X% to Y%"</li><li>Understanding "why people buy" at the JTBD level</li><li>Offer portfolio — substance, not design</li><li>Segmentation experience</li><li>Ask: "Describe our product in 30 sec for [segment]"</li></ul></div></div></div>
+      <div class="ind-role" id="role-brand"><div class="ind-role-header"><div><div class="ind-role-name">Brand Strategist</div><div class="ind-role-function">Conversion · brand & perception <span class="salary-tag">$5–10K project-based</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Required skills</h4><ul><li>Brand platform: mission, values, voice</li><li>Tone of voice and visual language</li><li>Strategic positioning</li><li>Competitor analysis and differentiation</li><li>Linking brand to business metrics</li></ul></div><div class="ind-role-col col-tasks"><h4>Problems solved</h4><ul><li>Brand platform / rebrand</li><li>Differentiation</li><li>Perception management</li><li>Premium positioning</li><li>Communication guidelines</li></ul></div><div class="ind-role-col col-hire"><h4>What to look for</h4><ul><li>Strategy portfolio, not just logos</li><li>Brand → business result connection</li><li>Audience understanding</li><li>Category experience</li><li>Ask: "What's the difference between brand and identity?"</li></ul></div></div></div>
+      <div class="ind-role" id="role-copywriter"><div class="ind-role-header"><div><div class="ind-role-name">Copywriter / Messaging Strategist</div><div class="ind-role-function">Conversion · copy & messaging <span class="salary-tag">$3–6K/mo staff · $1–3K project</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Required skills</h4><ul><li>Sales copy for landing pages, email, ads</li><li>Value proposition articulation</li><li>Message adaptation by segment</li><li>Multiple formats: web, email, social, scripts</li><li>A/B testing copy</li></ul></div><div class="ind-role-col col-tasks"><h4>Problems solved</h4><ul><li>Landing page and website copy</li><li>Email campaigns</li><li>Ad creatives</li><li>Product messaging</li><li>Sales scripts and proposals</li></ul></div><div class="ind-role-col col-hire"><h4>What to look for</h4><ul><li>Portfolio with conversion results</li><li>Audience understanding</li><li>Conversion-focused, not "image" copy</li><li>Ability to work with product</li><li>Ask: "Write a headline in 5 minutes"</li></ul></div></div></div>
+      <div class="ind-role" id="role-cro"><div class="ind-role-header"><div><div class="ind-role-name">CRO / UX Specialist</div><div class="ind-role-function">Conversion · funnel optimization <span class="salary-tag">$6–8K/mo staff · project-based</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Required skills</h4><ul><li>A/B and multivariate testing</li><li>Heatmaps, session recordings</li><li>Funnel and UX optimization</li><li>UX audits and prototyping</li><li>Hotjar, Optimizely, VWO</li></ul></div><div class="ind-role-col col-tasks"><h4>Problems solved</h4><ul><li>Conversion growth without more traffic</li><li>User journey optimization</li><li>Removing purchase barriers</li><li>Testing UX hypotheses</li><li>Revenue growth from existing traffic</li></ul></div><div class="ind-role-col col-hire"><h4>What to look for</h4><ul><li>Conversion growth cases with methodology</li><li>A/B testing experience (win rate)</li><li>Behavioral analytics tools</li><li>Statistical literacy</li><li>Ask: "How do you decide what to test?"</li></ul></div></div></div>
+    </div>
+
+    <div class="role-group" id="group-content">
+      <div class="ind-role" id="role-content-marketer"><div class="ind-role-header"><div><div class="ind-role-name">Content Marketer</div><div class="ind-role-function">Content · strategy & inbound <span class="salary-tag">$4–7K/mo staff · $2–3K project</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Required skills</h4><ul><li>Content strategy: pillars, nurture funnel</li><li>Turn expertise into content</li><li>Formats: articles, video, podcasts, case studies</li><li>Channel management: blog, newsletter, YouTube</li><li>Analytics: which content generates leads</li></ul></div><div class="ind-role-col col-tasks"><h4>Problems solved</h4><ul><li>Inbound lead flow</li><li>Warming up cold audiences</li><li>Expert positioning</li><li>Shortening the sales cycle</li><li>Content plan and editorial policy</li></ul></div><div class="ind-role-col col-hire"><h4>What to look for</h4><ul><li>Strategy, not "post 3 times a week"</li><li>Lead generation cases, not just reach</li><li>Content → leads connection</li><li>Relevant experience (B2B ≠ lifestyle)</li><li>Ask: "Show me a plan and its results"</li></ul></div></div></div>
+      <div class="ind-role" id="role-smm"><div class="ind-role-header"><div><div class="ind-role-name">Social Media Manager</div><div class="ind-role-function">Content · social media <span class="salary-tag">$3–6K/mo staff · $1–3K project</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Required skills</h4><ul><li>Platform management: Instagram, LinkedIn, TikTok, X</li><li>Platform-native content</li><li>Algorithms and formats per platform</li><li>Community building</li><li>Metrics: engagement, growth, conversion</li></ul></div><div class="ind-role-col col-tasks"><h4>Problems solved</h4><ul><li>Social media management and growth</li><li>Audience engagement</li><li>Leads from social</li><li>Audience interaction</li><li>Content adaptation across platforms</li></ul></div><div class="ind-role-col col-hire"><h4>What to look for</h4><ul><li>Account portfolio with growth metrics</li><li>Lead generation, not just "nice feed"</li><li>Understanding of your platforms</li><li>Ability to adapt, not just copy</li><li>Ask: "How do you measure SMM success?"</li></ul></div></div></div>
+      <div class="ind-role" id="role-pr"><div class="ind-role-header"><div><div class="ind-role-name">PR / Media Manager</div><div class="ind-role-function">Content · media presence <span class="salary-tag">$5–8K/mo staff · project-based</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Required skills</h4><ul><li>Media relations: pitching, press releases</li><li>Media strategy</li><li>Crisis communications</li><li>Event organization</li><li>Media networking</li></ul></div><div class="ind-role-col col-tasks"><h4>Problems solved</h4><ul><li>Publications in target media</li><li>Reputation management</li><li>Founder's media presence</li><li>Conferences and speaking</li><li>Influencer relations</li></ul></div><div class="ind-role-col col-hire"><h4>What to look for</h4><ul><li>Contacts in relevant media</li><li>Publication cases with results</li><li>Understanding of target media for niche</li><li>Ability to craft a news hook</li><li>Ask: "Which media for us and why?"</li></ul></div></div></div>
+    </div>
+
+    <div class="role-group" id="group-retention">
+      <div class="ind-role" id="role-crm"><div class="ind-role-header"><div><div class="ind-role-name">CRM / Lifecycle Marketer</div><div class="ind-role-function">Retention · strategy & automation <span class="salary-tag">$6–8K/mo staff · project-based</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Required skills</h4><ul><li>CRM strategy: segments, triggers, flows</li><li>RFM segmentation, cohorts</li><li>CDP: Braze, Customer.io, Klaviyo</li><li>Onboarding flows</li><li>Churn analysis and root causes</li></ul></div><div class="ind-role-col col-tasks"><h4>Problems solved</h4><ul><li>LTV and repeat purchase growth</li><li>Churn reduction</li><li>Database reactivation</li><li>Cross-sell / upsell automation</li><li>New customer onboarding</li></ul></div><div class="ind-role-col col-hire"><h4>What to look for</h4><ul><li>LTV / retention growth cases</li><li>CRM/CDP experience</li><li>RFM, cohorts, triggers</li><li>Systematic lifecycle, not one-off blasts</li><li>Ask: "Customer bought and went silent. What do you do?"</li></ul></div></div></div>
+      <div class="ind-role" id="role-email"><div class="ind-role-header"><div><div class="ind-role-name">Email Marketer</div><div class="ind-role-function">Retention · email channel <span class="salary-tag">$4–7K/mo staff · $2–3K project</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Required skills</h4><ul><li>Email strategy and flow architecture</li><li>Welcome, onboarding, retention flows</li><li>Deliverability: SPF, DKIM, warm-up</li><li>Email design and coding</li><li>A/B tests: subjects, content, timing</li></ul></div><div class="ind-role-col col-tasks"><h4>Problems solved</h4><ul><li>Email flows (welcome, win-back)</li><li>Promos and digests</li><li>Trigger-based emails</li><li>Improving OR, CTR, conversion</li><li>Segment personalization</li></ul></div><div class="ind-role-col col-hire"><h4>What to look for</h4><ul><li>Cases with metrics (OR, CTR, revenue)</li><li>Deliverability understanding</li><li>ESP experience</li><li>Flows, not one-off blasts</li><li>Ask: "What OR do you consider good?"</li></ul></div></div></div>
+      <div class="ind-role" id="role-community"><div class="ind-role-header"><div><div class="ind-role-name">Community Manager</div><div class="ind-role-function">Retention · community <span class="salary-tag">$3–5K/mo staff</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Required skills</h4><ul><li>Building and growing communities</li><li>Moderation and engagement</li><li>Event organization</li><li>Working with UGC</li><li>Ambassador programs</li></ul></div><div class="ind-role-col col-tasks"><h4>Problems solved</h4><ul><li>Loyal community</li><li>Retention through belonging</li><li>Feedback collection</li><li>Referral programs</li><li>Community-driven support</li></ul></div><div class="ind-role-col col-hire"><h4>What to look for</h4><ul><li>Community-building experience</li><li>Engagement metrics</li><li>Audience understanding</li><li>Ability to create value</li><li>Ask: "How do you keep engagement after 3 months?"</li></ul></div></div></div>
+    </div>
+
+    <div class="role-group" id="group-growth">
+      <div class="ind-role" id="role-growth-marketer"><div class="ind-role-header"><div><div class="ind-role-name">Growth Marketer / Head of Growth</div><div class="ind-role-function">Growth · system & experiments <span class="salary-tag">$10–18K/mo staff</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Required skills</h4><ul><li>Full funnel: acquisition → retention → revenue → referral</li><li>Bottleneck analysis</li><li>Experiment system: hypothesis → test → conclusion</li><li>Data: SQL, cohorts, LTV modeling</li><li>Cross-functional management</li><li>Prioritization: ICE/RICE</li></ul></div><div class="ind-role-col col-tasks"><h4>Problems solved</h4><ul><li>Growth system (process, not one-off tests)</li><li>Growth levers → scaling</li><li>Full-funnel optimization</li><li>Growth model</li><li>Product-led growth</li><li>Experiment backlog</li></ul></div><div class="ind-role-col col-hire"><h4>What to look for</h4><ul><li>Cases: "found X → Y% growth"</li><li>Sees the full funnel, not one channel</li><li>SQL, BI, not just GA</li><li>Cross-functional experience</li><li>Product understanding</li><li>Ask: "Tell me about a failed experiment"</li></ul></div></div></div>
+    </div>
+
+    <div class="role-group" id="group-architecture">
+      <div class="ind-role" id="role-cmo"><div class="ind-role-header"><div><div class="ind-role-name">CMO / VP of Marketing</div><div class="ind-role-function">Architecture · strategy & system <span class="salary-tag">$15–30K+/mo staff</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Required skills</h4><ul><li>Marketing architecture: channels, products, teams</li><li>Managing teams of 5–15+</li><li>Aligning marketing, product, and business goals</li><li>Marketing P&L</li><li>Processes: OKRs, planning, reviews</li><li>Strategy: where to grow, what to kill</li><li>Market: competitors, trends</li></ul></div><div class="ind-role-col col-tasks"><h4>Problems solved</h4><ul><li>Chaos → managed system</li><li>Marketing-product alignment</li><li>Team building</li><li>Budgets and forecasting</li><li>Scaling: markets, products</li><li>Marketing transformation</li></ul></div><div class="ind-role-col col-hire"><h4>What to look for</h4><ul><li>System-building, not just channels</li><li>"Marketing delivered X revenue"</li><li>Transformation cases</li><li>Team management: hiring, processes</li><li>Strategy → structure → people</li><li>Ask: "What will you do in the first 90 days?"</li></ul></div></div></div>
+    </div>
+  </div>
+
+  <!-- ===================== BUSINESS TYPES ===================== -->
+  <div class="section" id="sec-biz">
+    <div class="section-title">By Business Type</div>
+    <div class="section-desc">Different businesses — different marketing priorities. Pick your vertical.</div>
+
+    <div class="biz-tabs">
+      <div class="biz-tab active" data-biz="b2b-services" onclick="switchBiz('b2b-services')">B2B Services</div>
+      <div class="biz-tab" data-biz="saas" onclick="switchBiz('saas')">SaaS / IT Product</div>
+      <div class="biz-tab" data-biz="ecom" onclick="switchBiz('ecom')">E-commerce / D2C</div>
+      <div class="biz-tab" data-biz="education" onclick="switchBiz('education')">Education / Info</div>
+      <div class="biz-tab" data-biz="local" onclick="switchBiz('local')">Local Business</div>
+    </div>
+
+    <!-- B2B SERVICES -->
+    <div class="biz-page active" id="biz-b2b-services">
+      <div class="biz-header">
+        <div class="biz-title">B2B Services</div>
+        <div class="biz-subtitle">Consulting, agencies, legal, IT outsourcing, integrators</div>
+      </div>
+      <div class="biz-grid">
+        <div class="biz-card critical"><h4>Critical roles</h4><ul>
+          <li><strong>PMM</strong> — positioning and packaging are everything</li>
+          <li><strong>Content marketer</strong> — long cycle = need nurturing</li>
+          <li><strong>Copywriter</strong> — case studies, proposals, thought leadership</li>
+        </ul></div>
+        <div class="biz-card focus"><h4>Key focus</h4><ul>
+          <li>Expert content (case studies, articles, webinars)</li>
+          <li>Founder / expert personal brand</li>
+          <li>SEO for expert queries</li>
+          <li>Email nurturing (long sequences)</li>
+        </ul></div>
+        <div class="biz-card team"><h4>Minimum team (start)</h4><ul>
+          <li>PMM <span class="proj-tag staff">full-time</span></li>
+          <li>Content marketer <span class="proj-tag staff">full-time</span> or <span class="proj-tag freelance">project</span></li>
+          <li>SEO <span class="proj-tag freelance">project</span></li>
+          <li>Copywriter <span class="proj-tag freelance">project</span></li>
+        </ul></div>
+        <div class="biz-card mistakes"><h4>Common mistakes</h4><ul>
+          <li>Running paid traffic without expert content</li>
+          <li>Hiring SMM instead of a content marketer</li>
+          <li>Ignoring founder personal branding</li>
+          <li>Trying to sell directly with a long sales cycle</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- SAAS -->
+    <div class="biz-page" id="biz-saas">
+      <div class="biz-header">
+        <div class="biz-title">SaaS / IT Product</div>
+        <div class="biz-subtitle">Subscription services, mobile apps, platforms</div>
+      </div>
+      <div class="biz-grid">
+        <div class="biz-card critical"><h4>Critical roles</h4><ul>
+          <li><strong>Growth marketer</strong> — product-led growth, metrics, experiments</li>
+          <li><strong>Performance</strong> — scaling with clear unit economics</li>
+          <li><strong>CRM / Lifecycle</strong> — onboarding, activation, retention</li>
+        </ul></div>
+        <div class="biz-card focus"><h4>Key focus</h4><ul>
+          <li>User activation (onboarding)</li>
+          <li>Retention and churn reduction</li>
+          <li>Product-led growth (freemium, trials)</li>
+          <li>Data and experiments</li>
+        </ul></div>
+        <div class="biz-card team"><h4>Minimum team (start)</h4><ul>
+          <li>Growth marketer <span class="proj-tag staff">full-time</span></li>
+          <li>Performance <span class="proj-tag staff">full-time</span></li>
+          <li>CRM / Email <span class="proj-tag staff">full-time</span></li>
+          <li>Content <span class="proj-tag freelance">project</span></li>
+          <li>CRO / UX <span class="proj-tag freelance">project</span></li>
+        </ul></div>
+        <div class="biz-card mistakes"><h4>Common mistakes</h4><ul>
+          <li>Focusing only on acquisition without retention</li>
+          <li>No onboarding flows — users leave in the first week</li>
+          <li>Not tracking LTV and payback period</li>
+          <li>Hiring a brand marketer before product-market fit</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- ECOM -->
+    <div class="biz-page" id="biz-ecom">
+      <div class="biz-header">
+        <div class="biz-title">E-commerce / D2C</div>
+        <div class="biz-subtitle">Online stores, own brands, marketplaces</div>
+      </div>
+      <div class="biz-grid">
+        <div class="biz-card critical"><h4>Critical roles</h4><ul>
+          <li><strong>Performance</strong> — main sales driver</li>
+          <li><strong>CRM / Email</strong> — repeat purchases, abandoned cart</li>
+          <li><strong>SEO</strong> — category and product pages</li>
+        </ul></div>
+        <div class="biz-card focus"><h4>Key focus</h4><ul>
+          <li>ROAS and unit economics by channel</li>
+          <li>Retargeting and abandoned carts</li>
+          <li>Email flows: welcome, cart, repeat purchase</li>
+          <li>SMM for visual categories</li>
+        </ul></div>
+        <div class="biz-card team"><h4>Minimum team (start)</h4><ul>
+          <li>Performance marketer <span class="proj-tag staff">full-time</span></li>
+          <li>Email / CRM <span class="proj-tag staff">full-time</span></li>
+          <li>SMM / content <span class="proj-tag staff">full-time</span></li>
+          <li>SEO <span class="proj-tag freelance">project</span></li>
+          <li>Creative designer <span class="proj-tag freelance">project</span></li>
+        </ul></div>
+        <div class="biz-card mistakes"><h4>Common mistakes</h4><ul>
+          <li>Not tracking ROAS per channel</li>
+          <li>Ignoring email — the highest-margin channel</li>
+          <li>Spending on brand before stable traffic ROI</li>
+          <li>Not working on repeat purchases</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="biz-page" id="biz-education">
+      <div class="biz-header">
+        <div class="biz-title">Education / Info Products</div>
+        <div class="biz-subtitle">Online courses, schools, mentoring programs, learning platforms</div>
+      </div>
+      <div class="biz-grid">
+        <div class="biz-card critical"><h4>Critical roles</h4><ul>
+          <li><strong>Content marketer</strong> — warming and trust through expertise</li>
+          <li><strong>Performance</strong> — lead gen for webinars / lead magnets</li>
+          <li><strong>Copywriter</strong> — landing pages, email sequences, nurturing</li>
+        </ul></div>
+        <div class="biz-card focus"><h4>Key focus</h4><ul>
+          <li>Funnel: free content → lead magnet → webinar → sale</li>
+          <li>Nurturing email sequences</li>
+          <li>Expert personal brand</li>
+          <li>Retention: course completion rate, repeat purchases</li>
+        </ul></div>
+        <div class="biz-card team"><h4>Minimum team (start)</h4><ul>
+          <li>Content / SMM <span class="proj-tag staff">full-time</span></li>
+          <li>Performance <span class="proj-tag staff">full-time</span> or <span class="proj-tag freelance">project</span></li>
+          <li>Copywriter <span class="proj-tag freelance">project</span></li>
+          <li>Email marketer <span class="proj-tag freelance">project</span></li>
+          <li>Videographer / editor <span class="proj-tag freelance">project</span></li>
+        </ul></div>
+        <div class="biz-card mistakes"><h4>Common mistakes</h4><ul>
+          <li>Selling directly without nurturing</li>
+          <li>No email sequence after free event signup</li>
+          <li>Ignoring completion rate and course NPS</li>
+          <li>Spending everything on acquisition, forgetting LTV</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- LOCAL -->
+    <div class="biz-page" id="biz-local">
+      <div class="biz-header">
+        <div class="biz-title">Local Business</div>
+        <div class="biz-subtitle">Clinics, salons, restaurants, fitness, services</div>
+      </div>
+      <div class="biz-grid">
+        <div class="biz-card critical"><h4>Critical roles</h4><ul>
+          <li><strong>Performance</strong> — geo-targeting, local ads</li>
+          <li><strong>SMM</strong> — social media = storefront and trust</li>
+          <li><strong>CRM / Email</strong> — retention and repeat visits</li>
+        </ul></div>
+        <div class="biz-card focus"><h4>Key focus</h4><ul>
+          <li>Local SEO (Google Maps, Apple Maps, Yelp)</li>
+          <li>Reviews and ratings</li>
+          <li>Social media with visual content</li>
+          <li>CRM: reminders, loyalty programs</li>
+        </ul></div>
+        <div class="biz-card team"><h4>Minimum team (start)</h4><ul>
+          <li>SMM manager <span class="proj-tag staff">full-time</span> or <span class="proj-tag freelance">project</span></li>
+          <li>Performance (local ads) <span class="proj-tag freelance">project</span></li>
+          <li>CRM setup <span class="proj-tag freelance">project</span></li>
+          <li>Photographer / videographer <span class="proj-tag freelance">project</span></li>
+        </ul></div>
+        <div class="biz-card mistakes"><h4>Common mistakes</h4><ul>
+          <li>Ignoring maps and reviews</li>
+          <li>Hiring an expensive marketer instead of SMM + contractor</li>
+          <li>Not working on repeat visits</li>
+          <li>Spending on broad ads instead of local</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Shmelco &middot; product atelier &middot; Marketing Roles Map</div>
+</div>
+
+<script>
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('sec-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+  function showDiag(card) {
+    const role = card.dataset.role;
+    document.querySelectorAll('.diag-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    document.querySelectorAll('.diag-result').forEach(r => r.classList.remove('visible'));
+    const r = document.getElementById('result-' + role);
+    if (r) { r.classList.add('visible'); setTimeout(() => r.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50); }
+  }
+  function switchGroup(group) {
+    document.querySelectorAll('.role-group-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.role-group').forEach(g => g.classList.remove('active'));
+    document.querySelector('.role-group-tab[data-group="' + group + '"]').classList.add('active');
+    document.getElementById('group-' + group).classList.add('active');
+  }
+  function switchBiz(biz) {
+    document.querySelectorAll('.biz-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.biz-page').forEach(p => p.classList.remove('active'));
+    document.querySelector('.biz-tab[data-biz="' + biz + '"]').classList.add('active');
+    document.getElementById('biz-' + biz).classList.add('active');
+  }
+  let preAnswers = [null, null, null, null];
+  function answerPre(idx, val) {
+    preAnswers[idx] = val;
+    const card = document.querySelectorAll('.pre-card')[idx];
+    card.querySelectorAll('.pre-btn').forEach(b => b.className = 'pre-btn');
+    card.querySelectorAll('.pre-btn')[val ? 0 : 1].classList.add(val ? 'selected-yes' : 'selected-no');
+    if (preAnswers.every(a => a !== null)) {
+      const yeses = preAnswers.filter(a => a).length;
+      const r = document.getElementById('pre-result');
+      let html = '';
+      if (yeses <= 1) {
+        html = '<div class="result-header"><div class="result-icon">🛑</div><div><div class="result-title">Don\'t hire a marketer yet</div><div class="result-subtitle">Close the basics first — it\'ll save you tens of thousands</div></div></div>' +
+          '<div style="margin-top:16px"><h4 style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:10px;font-weight:500">Do this first:</h4><ul style="list-style:none">' +
+          '<li style="font-size:0.85rem;color:var(--text-dim);padding:4px 0 4px 14px;position:relative"><span style="position:absolute;left:0;font-weight:700;color:var(--text-muted)">·</span>Find 5–10 customers manually and understand why they buy</li>' +
+          '<li style="font-size:0.85rem;color:var(--text-dim);padding:4px 0 4px 14px;position:relative"><span style="position:absolute;left:0;font-weight:700;color:var(--text-muted)">·</span>Craft your offer in one sentence</li>' +
+          '<li style="font-size:0.85rem;color:var(--text-dim);padding:4px 0 4px 14px;position:relative"><span style="position:absolute;left:0;font-weight:700;color:var(--text-muted)">·</span>Build a simple funnel (landing page + form/messenger)</li>' +
+          '<li style="font-size:0.85rem;color:var(--text-dim);padding:4px 0 4px 14px;position:relative"><span style="position:absolute;left:0;font-weight:700;color:var(--text-muted)">·</span>Close first sales yourself — this gives data for your future marketer</li></ul></div>';
+      } else if (yeses <= 2) {
+        html = '<div class="result-header"><div class="result-icon">⚡</div><div><div class="result-title">You don\'t need a full-time marketer — hire a contractor</div><div class="result-subtitle">One-off tasks are better handled by freelancers — cheaper and faster</div></div></div>' +
+          '<div style="margin-top:16px"><h4 style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:10px;font-weight:500">Outsource on a project basis:</h4><ul style="list-style:none">' +
+          '<li style="font-size:0.85rem;color:var(--text-dim);padding:4px 0 4px 14px;position:relative"><span style="position:absolute;left:0;font-weight:700;color:var(--text-muted)">·</span>Positioning + landing page ($500–$2K one-off)</li>' +
+          '<li style="font-size:0.85rem;color:var(--text-dim);padding:4px 0 4px 14px;position:relative"><span style="position:absolute;left:0;font-weight:700;color:var(--text-muted)">·</span>Paid ads to test hypotheses ($1–2K/mo)</li>' +
+          '<li style="font-size:0.85rem;color:var(--text-dim);padding:4px 0 4px 14px;position:relative"><span style="position:absolute;left:0;font-weight:700;color:var(--text-muted)">·</span>Copy and content plan ($300–$800 one-off)</li></ul></div>' +
+          '<div class="result-warning" style="margin-top:16px"><strong>When to hire full-time:</strong> when you have a stable sales model and know which function to scale.</div>';
+      } else {
+        html = '<div class="result-header"><div class="result-icon">✅</div><div><div class="result-title">Yes, it\'s time to hire a marketer</div><div class="result-subtitle">You have the foundation — now amplify it</div></div></div>' +
+          '<div style="margin-top:16px"><p style="font-size:0.88rem;color:var(--text-dim);margin-bottom:12px">Go to <strong style="cursor:pointer;color:var(--accent-acquisition)" onclick="document.querySelector(\'[data-tab=diagnostic]\').click()">Diagnostic</strong> — identify which function is bottlenecking growth, and find out exactly who to hire.</p></div>' +
+          '<div class="result-warning" style="margin-top:12px"><strong>Pro tip:</strong> 80% of the time, the first marketer should be a PMM (messaging & positioning). Not a performance marketer, not an SMM. Without packaging, you\'re paying for traffic that won\'t convert.</div>';
+      }
+      r.innerHTML = html;
+      r.classList.add('visible');
+      setTimeout(() => r.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    }
+  }
+  const roleToGroup = {
+    'performance': 'acquisition', 'seo': 'acquisition', 'affiliate': 'acquisition',
+    'pmm': 'conversion', 'brand': 'conversion', 'copywriter': 'conversion', 'cro': 'conversion',
+    'content-marketer': 'content', 'smm': 'content', 'pr': 'content',
+    'crm': 'retention', 'email': 'retention', 'community': 'retention',
+    'growth-marketer': 'growth', 'cmo': 'architecture'
+  };
+  function goToRole(roleId) {
+    const group = roleToGroup[roleId];
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelector('[data-tab="roles"]').classList.add('active');
+    document.getElementById('sec-roles').classList.add('active');
+    switchGroup(group);
+    const el = document.getElementById('role-' + roleId);
+    if (el) { setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 2000); }, 100); }
+  }
+</script>
+</body>
+</html>
