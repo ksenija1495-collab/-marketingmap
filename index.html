@@ -1,19 +1,762 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Marketing Map — Shmelco</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Какой маркетолог тебе нужен? — Shmelco</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F8F7ED; --surface: #ffffff; --surface-2: #f3f0e4;
+    --border: #E4D0B9; --border-hover: #c9ad8e;
+    --text: #462918; --text-dim: #7a5c48; --text-muted: #a89080;
+    --accent-acquisition: #a87c4f; --accent-conversion: #8b6b5a;
+    --accent-content: #6b8f71; --accent-retention: #7a8c5e;
+    --accent-growth: #b5704d; --accent-architecture: #5e6b52;
+    --accent-brand: #9b7a6a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.65; font-size: 15px;
+    -webkit-font-smoothing: antialiased; font-feature-settings: 'kern' 1, 'liga' 1;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+  .hero { padding: 72px 0 36px; text-align: center; }
+  .hero .brand-label { display: inline-block; font-family: 'Inter', sans-serif; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.28em; color: var(--text-muted); margin-bottom: 20px; padding: 7px 18px; border: 1px solid var(--border); border-radius: 40px; background: var(--surface); font-weight: 500; }
+  .hero h1 { font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif; font-size: 2.8rem; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 14px; color: var(--text); line-height: 1.15; }
+  .hero .subtitle { font-size: 0.95rem; color: var(--text-dim); max-width: 540px; margin: 0 auto; line-height: 1.7; }
+  .nav-tabs { display: flex; gap: 6px; justify-content: center; margin: 36px 0 40px; flex-wrap: wrap; }
+  .nav-tab { padding: 9px 18px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); cursor: pointer; font-size: 0.86rem; font-weight: 500; transition: all 0.2s; }
+  .nav-tab:hover { border-color: var(--border-hover); color: var(--text); }
+  .nav-tab.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .section { display: none; } .section.active { display: block; }
+  .section-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.7rem; font-weight: 600; margin-bottom: 8px; letter-spacing: -0.01em; line-height: 1.2; }
+  .section-desc { color: var(--text-dim); margin-bottom: 32px; font-size: 0.88rem; line-height: 1.7; }
+
+  /* DIAGNOSTIC */
+  .diagnostic-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-bottom: 40px; }
+  .diag-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 22px; cursor: pointer; transition: all 0.25s; box-shadow: 0 1px 3px rgba(70,41,24,0.04); }
+  .diag-card:hover { border-color: var(--border-hover); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(70,41,24,0.07); }
+  .diag-card.selected { transform: translateY(-2px); }
+  .diag-card.selected { border-color: var(--text); box-shadow: 0 2px 12px rgba(70,41,24,0.08); }
+  .diag-card .icon { font-size: 1.5rem; margin-bottom: 10px; }
+  .diag-card h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; line-height: 1.3; }
+  .diag-card p { font-size: 0.83rem; color: var(--text-dim); line-height: 1.5; }
+  .diag-result { display: none; background: var(--surface); border-radius: 14px; padding: 28px; margin-bottom: 40px; border: 1px solid var(--border); animation: fadeIn 0.3s ease; box-shadow: 0 2px 8px rgba(70,41,24,0.05); }
+  .diag-result.visible { display: block; }
+  .diag-result .result-header { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .diag-result .result-icon { font-size: 1.8rem; }
+  .diag-result .result-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.35rem; font-weight: 600; line-height: 1.25; }
+  .diag-result .result-subtitle { font-size: 0.85rem; color: var(--text-dim); }
+  .diag-result .result-roles { margin-bottom: 16px; }
+  .diag-result .result-roles h4 { font-family: 'Inter', sans-serif; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 10px; font-weight: 500; }
+  .role-link { display: inline-block; padding: 6px 14px; margin: 3px 4px 3px 0; border-radius: 6px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+  .role-link:hover { border-color: var(--border-hover); background: var(--surface-2); box-shadow: 0 1px 4px rgba(70,41,24,0.06); }
+  .diag-result .result-warning { margin-top: 16px; padding: 14px; background: rgba(181,112,77,0.08); border-radius: 8px; border: 1px solid rgba(181,112,77,0.18); font-size: 0.83rem; color: var(--accent-growth); }
+  .diag-result .result-warning strong { color: #96533a; }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding: 16px 0 40px; }
+  .timeline::before { content: ''; position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+  .timeline-item { position: relative; padding-left: 64px; margin-bottom: 16px; }
+  .timeline-dot { position: absolute; left: 16px; top: 4px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--border); background: var(--bg); z-index: 1; }
+  .timeline-item[data-color="orange"] .timeline-dot { border-color: var(--accent-acquisition); }
+  .timeline-item[data-color="purple"] .timeline-dot { border-color: var(--accent-conversion); }
+  .timeline-item[data-color="green"] .timeline-dot { border-color: var(--accent-retention); }
+  .timeline-item[data-color="red"] .timeline-dot { border-color: var(--accent-growth); }
+  .timeline-item[data-color="yellow"] .timeline-dot { border-color: var(--accent-architecture); }
+  .timeline-item[data-color="gray"] .timeline-dot { border-color: var(--text-muted); }
+  .tl-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; transition: all 0.2s; box-shadow: 0 1px 3px rgba(70,41,24,0.04); }
+  .tl-card:hover { border-color: var(--border-hover); box-shadow: 0 3px 10px rgba(70,41,24,0.06); }
+  .timeline-stage { font-family: 'Inter', sans-serif; font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--text-muted); margin-bottom: 4px; font-weight: 500; }
+  .timeline-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.2rem; font-weight: 600; margin-bottom: 6px; line-height: 1.3; }
+  .timeline-desc { font-size: 0.85rem; color: var(--text-dim); margin-bottom: 12px; max-width: 600px; }
+  .tl-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .tl-tag { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+  .tl-tag:hover { opacity: 0.8; }
+  .tl-tag.acquisition { background: rgba(168,124,79,0.12); color: var(--accent-acquisition); }
+  .tl-tag.conversion { background: rgba(139,107,90,0.12); color: var(--accent-conversion); }
+  .tl-tag.content { background: rgba(107,143,113,0.12); color: var(--accent-content); }
+  .tl-tag.retention { background: rgba(122,140,94,0.12); color: var(--accent-retention); }
+  .tl-tag.growth { background: rgba(181,112,77,0.12); color: var(--accent-growth); }
+  .tl-tag.architecture { background: rgba(94,107,82,0.12); color: var(--accent-architecture); }
+  .tl-tag.brand { background: rgba(155,122,106,0.12); color: var(--accent-brand); }
+  .tl-tag.founder { background: rgba(168,144,128,0.12); color: var(--text-dim); cursor: default; }
+  .tl-team { padding-top: 14px; border-top: 1px solid var(--border); }
+  .tl-team-label { font-family: 'Inter', sans-serif; font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
+  .tl-team-list { list-style: none; }
+  .tl-team-list li { font-size: 0.82rem; color: var(--text-dim); padding: 2px 0 2px 14px; position: relative; }
+  .tl-team-list li::before { content: '·'; position: absolute; left: 0; font-weight: 700; color: var(--text-muted); }
+  .tl-team-list li em { font-style: normal; opacity: 0.7; font-size: 0.78rem; }
+  .timeline-note { margin-top: 10px; font-size: 0.78rem; color: var(--text-muted); font-style: italic; }
+
+  /* BUDGET BLOCK in timeline */
+  .tl-budget { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .tl-budget-col h5 { font-family: 'Inter', sans-serif; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; }
+  .tl-budget-col .budget-val { font-size: 0.92rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .tl-budget-col .budget-note { font-size: 0.76rem; color: var(--text-dim); }
+  .tl-budget-col ul { list-style: none; }
+  .tl-budget-col li { font-size: 0.78rem; color: var(--text-dim); padding: 1px 0 1px 10px; position: relative; }
+  .tl-budget-col li::before { content: '·'; position: absolute; left: 0; color: var(--text-muted); }
+  .proj-tag { display: inline-block; font-size: 0.68rem; padding: 1px 6px; border-radius: 3px; margin-left: 4px; font-weight: 600; }
+  .proj-tag.staff { background: rgba(107,143,113,0.15); color: var(--accent-content); }
+  .proj-tag.freelance { background: rgba(168,124,79,0.15); color: var(--accent-acquisition); }
+  .proj-tag.optional { background: rgba(168,144,128,0.12); color: var(--text-muted); }
+
+  /* ROLES */
+  .role-group-tabs { display: flex; gap: 6px; margin-bottom: 28px; flex-wrap: wrap; }
+  .role-group-tab { display: flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: all 0.2s; }
+  .role-group-tab:hover { border-color: var(--border-hover); color: var(--text); }
+  .role-group-tab.active { background: var(--surface); color: var(--text); border-color: var(--text); box-shadow: 0 1px 4px rgba(70,41,24,0.06); }
+  .role-group { display: none; animation: fadeIn 0.25s ease; } .role-group.active { display: block; }
+  .ind-role { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px 26px; margin-bottom: 16px; transition: all 0.2s; box-shadow: 0 1px 3px rgba(70,41,24,0.04); }
+  .ind-role:hover { border-color: var(--border-hover); box-shadow: 0 3px 10px rgba(70,41,24,0.06); }
+  .ind-role.flash { border-color: var(--accent-acquisition); box-shadow: 0 0 0 3px rgba(168,124,79,0.15); transition: all 0.4s; }
+  .ind-role-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .ind-role-name { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.3rem; font-weight: 600; line-height: 1.25; }
+  .ind-role-function { font-size: 0.78rem; color: var(--text-muted); }
+  .ind-role-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .ind-role-col h4 { font-family: 'Inter', sans-serif; font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; font-weight: 600; }
+  .ind-role-col.col-skills h4 { color: var(--accent-content); }
+  .ind-role-col.col-tasks h4 { color: var(--accent-acquisition); }
+  .ind-role-col.col-hire h4 { color: var(--accent-conversion); }
+  .ind-role-col ul { list-style: none; }
+  .ind-role-col li { font-size: 0.83rem; color: var(--text-dim); padding: 3px 0 3px 12px; position: relative; }
+  .ind-role-col li::before { content: '·'; position: absolute; left: 0; font-weight: 700; color: var(--text-muted); }
+
+  /* BUSINESS TYPE CARDS */
+  .biz-tabs { display: flex; gap: 6px; margin-bottom: 28px; flex-wrap: wrap; }
+  .biz-tab { padding: 7px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: all 0.2s; }
+  .biz-tab:hover { border-color: var(--border-hover); color: var(--text); }
+  .biz-tab.active { background: var(--surface); color: var(--text); border-color: var(--text); box-shadow: 0 1px 4px rgba(70,41,24,0.06); }
+  .biz-page { display: none; animation: fadeIn 0.25s ease; } .biz-page.active { display: block; }
+  .biz-header { margin-bottom: 24px; }
+  .biz-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.4rem; font-weight: 600; margin-bottom: 6px; line-height: 1.25; }
+  .biz-subtitle { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+  .biz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .biz-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(70,41,24,0.04); }
+  .biz-card h4 { font-family: 'Inter', sans-serif; font-size: 0.67rem; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; font-weight: 600; }
+  .biz-card.critical h4 { color: var(--accent-growth); }
+  .biz-card.secondary h4 { color: var(--text-dim); }
+  .biz-card.focus h4 { color: var(--accent-content); }
+  .biz-card.mistakes h4 { color: #96533a; }
+  .biz-card.team h4 { color: var(--accent-acquisition); }
+  .biz-card ul { list-style: none; }
+  .biz-card li { font-size: 0.83rem; color: var(--text-dim); padding: 3px 0 3px 12px; position: relative; }
+  .biz-card li::before { content: '·'; position: absolute; left: 0; font-weight: 700; color: var(--text-muted); }
+  .biz-full { grid-column: 1 / -1; }
+
+  /* BOTTOM */
+  .info-block { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(70,41,24,0.04); }
+  .info-block h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.25rem; font-weight: 600; margin-bottom: 14px; line-height: 1.25; }
+  .error-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin-bottom: 10px; font-size: 0.85rem; }
+  .err-action { color: var(--text-dim); } .err-arrow { color: var(--text-muted); } .err-result { color: #96533a; }
+  .logic-list { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+  .logic-list p { font-size: 0.85rem; font-weight: 600; margin-bottom: 10px; }
+  .logic-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 0.88rem; }
+  .logic-row .la { color: var(--text-dim); min-width: 180px; } .logic-row .lw { font-weight: 600; cursor: pointer; } .logic-row .lw:hover { opacity: 0.8; }
+  .pre-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+  .pre-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(70,41,24,0.04); }
+  .pre-card p { font-size: 0.88rem; margin-bottom: 12px; font-weight: 500; }
+  .pre-btns { display: flex; gap: 8px; }
+  .pre-btn { padding: 7px 18px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface); cursor: pointer; font-size: 0.82rem; font-weight: 500; transition: all 0.2s; font-family: 'Inter', sans-serif; color: var(--text-dim); }
+  .pre-btn:hover { border-color: var(--border-hover); color: var(--text); }
+  .pre-btn.selected-yes { background: rgba(107,143,113,0.12); border-color: var(--accent-content); color: var(--accent-content); }
+  .pre-btn.selected-no { background: rgba(181,112,77,0.08); border-color: var(--accent-growth); color: var(--accent-growth); }
+  .first-hire-block { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 28px; margin-top: 24px; box-shadow: 0 2px 8px rgba(70,41,24,0.05); }
+  .first-hire-block h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 1.25rem; font-weight: 600; margin-bottom: 14px; }
+  .red-flags { margin-top: 24px; }
+  .red-flag { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+  .red-flag:last-child { border-bottom: none; }
+  .red-flag-icon { color: var(--accent-growth); font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+  .red-flag-text { color: var(--text-dim); }
+  .red-flag-text strong { color: var(--text); }
+  .salary-tag { display: inline-block; font-size: 0.72rem; padding: 2px 8px; border-radius: 4px; background: rgba(168,124,79,0.1); color: var(--accent-acquisition); font-weight: 600; margin-left: 6px; }
+  .footer { text-align: center; padding: 40px 0; color: var(--text-muted); font-size: 0.72rem; border-top: 1px solid var(--border); margin-top: 48px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 2rem; } .section-title { font-size: 1.35rem; } .ind-role-grid { grid-template-columns: 1fr; }
+    .tl-budget { grid-template-columns: 1fr; } .biz-grid { grid-template-columns: 1fr; }
+    .error-row { grid-template-columns: 1fr; gap: 2px; } .err-arrow { display: none; }
+    .timeline::before { left: 16px; } .timeline-item { padding-left: 48px; } .timeline-dot { left: 8px; }
+  }
+</style>
 </head>
-<body style="font-family: Arial; text-align: center; padding: 100px;">
+<body>
+<div class="container">
 
-  <h1>Marketing Map</h1>
-  <p>Выбери язык / Choose your language</p>
+  <div class="hero">
+    <div class="brand-label">Shmelco · product atelier</div>
+    <h1>Какой маркетолог тебе нужен?</h1>
+    <p class="subtitle">«Просто маркетолог» не работает. Важно понять, какая функция сейчас сломана — и нанять под неё.</p>
+  </div>
 
-  <br>
+  <div class="nav-tabs">
+    <div class="nav-tab active" data-tab="pre">Нужен ли маркетолог?</div>
+    <div class="nav-tab" data-tab="diagnostic">Диагностика</div>
+    <div class="nav-tab" data-tab="stages">Стадии</div>
+    <div class="nav-tab" data-tab="roles">Роли</div>
+    <div class="nav-tab" data-tab="biz">По типу бизнеса</div>
+  </div>
 
-  <a href="ru.html" style="font-size: 20px;">🇷🇺 Русский</a>
-  <br><br>
-  <a href="en.html" style="font-size: 20px;">🇬🇧 English</a>
+  <!-- ===================== PRE-DIAGNOSTIC ===================== -->
+  <div class="section active" id="sec-pre">
+    <div class="section-title">А маркетолог ли тебе сейчас нужен?</div>
+    <div class="section-desc">Ответь на 4 вопроса — и узнай, стоит ли сейчас нанимать или лучше сделать что-то другое.</div>
+    <div class="pre-grid">
+      <div class="pre-card"><p>Есть ли у тебя хотя бы 5 платящих клиентов?</p><div class="pre-btns"><button class="pre-btn" onclick="answerPre(0,true)">Да</button><button class="pre-btn" onclick="answerPre(0,false)">Нет</button></div></div>
+      <div class="pre-card"><p>Можешь ли ты в одном предложении объяснить, почему покупают именно у тебя?</p><div class="pre-btns"><button class="pre-btn" onclick="answerPre(1,true)">Да</button><button class="pre-btn" onclick="answerPre(1,false)">Нет</button></div></div>
+      <div class="pre-card"><p>Есть ли у тебя хотя бы одна работающая воронка продаж?</p><div class="pre-btns"><button class="pre-btn" onclick="answerPre(2,true)">Да</button><button class="pre-btn" onclick="answerPre(2,false)">Нет</button></div></div>
+      <div class="pre-card"><p>Готов ли ты выделить 100–200К/мес на маркетинг минимум 3 месяца?</p><div class="pre-btns"><button class="pre-btn" onclick="answerPre(3,true)">Да</button><button class="pre-btn" onclick="answerPre(3,false)">Нет</button></div></div>
+    </div>
+    <div class="diag-result" id="pre-result"></div>
+  </div>
 
+  <!-- ===================== DIAGNOSTIC ===================== -->
+  <div class="section" id="sec-diagnostic">
+    <div class="section-title">Что у тебя сейчас не работает?</div>
+    <div class="section-desc">Выбери ситуацию — получишь конкретный ответ: кто нужен и почему.</div>
+    <div class="diagnostic-grid">
+      <div class="diag-card" data-role="acquisition" onclick="showDiag(this)"><div class="icon">🚀</div><h3>Мало заявок / лидов</h3><p>Продукт есть, конверсия есть, но людей мало.</p></div>
+      <div class="diag-card" data-role="conversion" onclick="showDiag(this)"><div class="icon">🧠</div><h3>Трафик есть, но не покупают</h3><p>Люди приходят, но не понимают ценность.</p></div>
+      <div class="diag-card" data-role="content" onclick="showDiag(this)"><div class="icon">📣</div><h3>Нет доверия / долго думают</h3><p>Нет входящих заявок. Длинный цикл решения.</p></div>
+      <div class="diag-card" data-role="retention" onclick="showDiag(this)"><div class="icon">🔁</div><h3>Клиенты не возвращаются</h3><p>Нет повторных продаж. Деньги утекают.</p></div>
+      <div class="diag-card" data-role="growth" onclick="showDiag(this)"><div class="icon">📈</div><h3>Рост хаотичный</h3><p>Много действий, нет системы.</p></div>
+      <div class="diag-card" data-role="architecture" onclick="showDiag(this)"><div class="icon">🧩</div><h3>Всё есть, не складывается</h3><p>Хаос. Много людей/каналов — нет системы.</p></div>
+    </div>
+    <div class="diag-result" id="result-acquisition"><div class="result-header"><div class="result-icon">🚀</div><div><div class="result-title">Проблема: привлечение</div><div class="result-subtitle">Нужно больше трафика и лидов при сохранении экономики</div></div></div><div class="result-roles"><h4>Тебе нужен один из этих специалистов:</h4><span class="role-link" onclick="goToRole('performance')">Performance-маркетолог</span><span class="role-link" onclick="goToRole('seo')">SEO-специалист</span><span class="role-link" onclick="goToRole('affiliate')">Affiliate-менеджер</span></div><div class="result-warning"><strong>Когда НЕ нанимать:</strong> нет оффера / позиционирования, нет конверсии.</div></div>
+    <div class="diag-result" id="result-conversion"><div class="result-header"><div class="result-icon">🧠</div><div><div class="result-title">Проблема: конверсия и смыслы</div><div class="result-subtitle">Люди приходят, но не покупают</div></div></div><div class="result-roles"><h4>Тебе нужен один из этих специалистов:</h4><span class="role-link" onclick="goToRole('pmm')">Product Marketing Manager</span><span class="role-link" onclick="goToRole('brand')">Brand-стратег</span><span class="role-link" onclick="goToRole('copywriter')">Копирайтер / Messaging</span><span class="role-link" onclick="goToRole('cro')">CRO / UX</span></div><div class="result-warning"><strong>Когда НЕ нанимать:</strong> нет трафика, нет продукта, нет спроса.</div></div>
+    <div class="diag-result" id="result-content"><div class="result-header"><div class="result-icon">📣</div><div><div class="result-title">Проблема: доверие и входящий поток</div><div class="result-subtitle">Нет входящих, аудитория не «прогрета»</div></div></div><div class="result-roles"><h4>Тебе нужен один из этих специалистов:</h4><span class="role-link" onclick="goToRole('content-marketer')">Content-маркетолог</span><span class="role-link" onclick="goToRole('smm')">SMM-менеджер</span><span class="role-link" onclick="goToRole('pr')">PR / Media</span></div><div class="result-warning"><strong>Когда НЕ нанимать:</strong> нет позиционирования, нет оффера.</div></div>
+    <div class="diag-result" id="result-retention"><div class="result-header"><div class="result-icon">🔁</div><div><div class="result-title">Проблема: удержание</div><div class="result-subtitle">Клиенты не возвращаются</div></div></div><div class="result-roles"><h4>Тебе нужен один из этих специалистов:</h4><span class="role-link" onclick="goToRole('crm')">CRM / Lifecycle</span><span class="role-link" onclick="goToRole('email')">Email-маркетолог</span><span class="role-link" onclick="goToRole('community')">Community</span></div><div class="result-warning"><strong>Когда НЕ нанимать:</strong> нет потока клиентов, нет базы.</div></div>
+    <div class="diag-result" id="result-growth"><div class="result-header"><div class="result-icon">📈</div><div><div class="result-title">Проблема: система роста</div><div class="result-subtitle">Рост нестабильный, нет управляемости</div></div></div><div class="result-roles"><h4>Тебе нужен:</h4><span class="role-link" onclick="goToRole('growth-marketer')">Growth / Head of Growth</span></div><div class="result-warning"><strong>Когда НЕ нанимать:</strong> нет базовых продаж, нет данных.</div></div>
+    <div class="diag-result" id="result-architecture"><div class="result-header"><div class="result-icon">🧩</div><div><div class="result-title">Проблема: архитектура</div><div class="result-subtitle">Всё есть, но не складывается</div></div></div><div class="result-roles"><h4>Тебе нужен:</h4><span class="role-link" onclick="goToRole('cmo')">CMO / VP of Marketing</span></div><div class="result-warning"><strong>Когда НЕ нанимать:</strong> ранняя стадия, нет стабильных продаж.</div></div>
+    <div class="first-hire-block">
+      <h3>👤 Твой первый маркетолог</h3>
+      <p style="font-size:0.88rem;color:var(--text-dim);margin-bottom:16px">В 80% случаев первый найм — <strong style="cursor:pointer" onclick="goToRole('pmm')">PMM (Product Marketing Manager)</strong>. Не таргетолог, не SMM, не «маркетолог на все руки».</p>
+      <p style="font-size:0.85rem;color:var(--text-dim);margin-bottom:4px"><strong>Почему:</strong> без упаковки (позиционирование, оффер, смыслы) любой трафик сливается. PMM превращает «у нас хороший продукт» в «вот почему тебе нужно купить именно это».</p>
+      <p style="font-size:0.85rem;color:var(--text-dim)"><strong>Исключения:</strong> если конверсия уже работает и нужно просто больше людей — тогда Performance. Если длинный цикл и нет доверия — Content-маркетолог.</p>
+    </div>
+    <div class="first-hire-block red-flags" style="margin-top:16px">
+      <h3>🚩 Красные флаги при найме</h3>
+      <div class="red-flag"><div class="red-flag-icon">⚠️</div><div class="red-flag-text"><strong>«Я увеличу охваты»</strong> — говорит про метрики тщеславия, не про деньги. Спроси: «Как это повлияет на выручку?»</div></div>
+      <div class="red-flag"><div class="red-flag-icon">⚠️</div><div class="red-flag-text"><strong>Не спрашивает про продукт и аудиторию</strong> — исполнитель, не стратег. Хороший маркетолог начинает с вопросов, не с предложений.</div></div>
+      <div class="red-flag"><div class="red-flag-icon">⚠️</div><div class="red-flag-text"><strong>«Результат через 2 недели»</strong> — не понимает маркетинговый цикл. Реалистичный срок для первых результатов: 2–3 месяца.</div></div>
+      <div class="red-flag"><div class="red-flag-icon">⚠️</div><div class="red-flag-text"><strong>Портфолио только из «красивых» проектов</strong> — попроси цифры: конверсия, CAC, ROI. Если нет цифр — нет результата.</div></div>
+      <div class="red-flag"><div class="red-flag-icon">⚠️</div><div class="red-flag-text"><strong>«Я делаю всё»</strong> — маркетолог-универсал на ранних стадиях ещё ок. Но если компания на стадии 2+ — нужен специалист.</div></div>
+    </div>
+  </div>
+
+  <!-- ===================== STAGES ===================== -->
+  <div class="section" id="sec-stages">
+    <div class="section-title">Маркетологи по стадиям роста</div>
+    <div class="section-desc">Каждой стадии — своя команда, свой бюджет. Нанимать «следующую стадию», не закрыв предыдущую — главная ошибка.</div>
+    <div class="timeline">
+
+      <!-- STAGE 0 -->
+      <div class="timeline-item" data-color="gray">
+        <div class="timeline-dot"></div>
+        <div class="tl-card">
+          <div class="timeline-stage">Стадия 0</div>
+          <div class="timeline-title">0 → первые деньги</div>
+          <div class="timeline-desc">Фаундер-продажи, первые гипотезы, ручной маркетинг. Параллельно — работа над брендом и упаковкой смыслов.</div>
+          <div class="tl-tags">
+            <span class="tl-tag founder">Фаундер сам</span>
+            <span class="tl-tag brand" onclick="goToRole('brand')">✨ Бренд + смыслы</span>
+          </div>
+          <div class="tl-team">
+            <div class="tl-team-label">Минимальная команда</div>
+            <ul class="tl-team-list">
+              <li>Фаундер <em>— продажи, позиционирование</em> <span class="proj-tag staff">сам</span></li>
+              <li>Дизайнер / верстальщик <em>— лендинг, визуал</em> <span class="proj-tag freelance">проект</span></li>
+              <li>Копирайтер <em>— тексты, упаковка</em> <span class="proj-tag freelance">проект</span></li>
+            </ul>
+          </div>
+          <div class="tl-budget">
+            <div class="tl-budget-col"><h5>ФОТ маркетинга</h5><div class="budget-val">0 – 50 тыс/мес</div><div class="budget-note">Только разовые подрядчики</div></div>
+            <div class="tl-budget-col"><h5>Штат</h5><div class="budget-val">0 человек</div><div class="budget-note">Маркетолог не нужен</div></div>
+            <div class="tl-budget-col"><h5>Попроектно</h5><ul><li>Лендинг: 30–80К</li><li>Логотип + визуал: 20–60К</li><li>Тексты / упаковка: 15–40К</li></ul></div>
+          </div>
+          <div class="timeline-note">Не нанимай штатного маркетолога. Но начинай строить бренд — это фундамент.</div>
+        </div>
+      </div>
+
+      <!-- STAGE 1 -->
+      <div class="timeline-item" data-color="purple">
+        <div class="timeline-dot"></div>
+        <div class="tl-card">
+          <div class="timeline-stage">Стадия 1</div>
+          <div class="timeline-title">Первые продажи → повторяемость</div>
+          <div class="timeline-desc">Понять: кто покупает, почему покупает, как это упаковать.</div>
+          <div class="tl-tags">
+            <span class="tl-tag conversion" onclick="goToRole('pmm')">🧠 PMM</span>
+            <span class="tl-tag content" onclick="goToRole('content-marketer')">📣 Content</span>
+            <span class="tl-tag brand" onclick="goToRole('brand')">✨ Brand</span>
+          </div>
+          <div class="tl-team">
+            <div class="tl-team-label">Минимальная команда</div>
+            <ul class="tl-team-list">
+              <li onclick="goToRole('pmm')" style="cursor:pointer">PMM / маркетолог-упаковщик <span class="proj-tag staff">штат</span></li>
+              <li onclick="goToRole('content-marketer')" style="cursor:pointer">Content-менеджер <span class="proj-tag freelance">проект</span></li>
+              <li>Фаундер <em>— продажи и смыслы</em> <span class="proj-tag staff">сам</span></li>
+            </ul>
+          </div>
+          <div class="tl-budget">
+            <div class="tl-budget-col"><h5>ФОТ маркетинга</h5><div class="budget-val">100 – 200 тыс/мес</div><div class="budget-note">1 штатный + фрилансеры</div></div>
+            <div class="tl-budget-col"><h5>Штат</h5><div class="budget-val">1 человек</div><div class="budget-note">PMM — первый найм</div></div>
+            <div class="tl-budget-col"><h5>Попроектно</h5><ul><li>SMM / контент: 30–60К/мес</li><li>Brand-стратегия: 50–150К разово</li><li>Дизайн: по задачам</li></ul></div>
+          </div>
+          <div class="timeline-note">Первый маркетолог = PMM. Content подключай попроектно.</div>
+        </div>
+      </div>
+
+      <!-- STAGE 2 -->
+      <div class="timeline-item" data-color="orange">
+        <div class="timeline-dot"></div>
+        <div class="tl-card">
+          <div class="timeline-stage">Стадия 2</div>
+          <div class="timeline-title">Есть конверсия → нужно больше лидов</div>
+          <div class="timeline-desc">Работающая модель есть — масштабировать поток.</div>
+          <div class="tl-tags">
+            <span class="tl-tag acquisition" onclick="goToRole('performance')">🚀 Performance</span>
+            <span class="tl-tag acquisition" onclick="goToRole('seo')">SEO</span>
+            <span class="tl-tag conversion" onclick="goToRole('pmm')">🧠 PMM</span>
+            <span class="tl-tag content" onclick="goToRole('content-marketer')">📣 Content</span>
+          </div>
+          <div class="tl-team">
+            <div class="tl-team-label">Минимальная команда</div>
+            <ul class="tl-team-list">
+              <li onclick="goToRole('performance')" style="cursor:pointer">Performance-маркетолог <span class="proj-tag staff">штат</span></li>
+              <li onclick="goToRole('pmm')" style="cursor:pointer">PMM <span class="proj-tag staff">штат</span></li>
+              <li onclick="goToRole('content-marketer')" style="cursor:pointer">Content-менеджер <span class="proj-tag staff">штат</span></li>
+              <li onclick="goToRole('seo')" style="cursor:pointer">SEO-специалист <span class="proj-tag freelance">проект</span></li>
+            </ul>
+          </div>
+          <div class="tl-budget">
+            <div class="tl-budget-col"><h5>ФОТ маркетинга</h5><div class="budget-val">300 – 500 тыс/мес</div><div class="budget-note">2–3 штатных + подрядчики</div></div>
+            <div class="tl-budget-col"><h5>Штат</h5><div class="budget-val">2–3 человека</div><div class="budget-note">Performance + PMM + Content</div></div>
+            <div class="tl-budget-col"><h5>Попроектно</h5><ul><li>SEO: 40–80К/мес</li><li>Дизайн креативов: 20–50К/мес</li><li>Аналитика: по задачам</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAGE 3 -->
+      <div class="timeline-item" data-color="green">
+        <div class="timeline-dot"></div>
+        <div class="tl-card">
+          <div class="timeline-stage">Стадия 3</div>
+          <div class="timeline-title">Появилась база → деньги «теряются»</div>
+          <div class="timeline-desc">Клиенты приходят, но не возвращаются.</div>
+          <div class="tl-tags">
+            <span class="tl-tag retention" onclick="goToRole('crm')">🔁 CRM</span>
+            <span class="tl-tag retention" onclick="goToRole('email')">Email</span>
+            <span class="tl-tag acquisition" onclick="goToRole('performance')">🚀 Performance</span>
+            <span class="tl-tag brand" onclick="goToRole('brand')">✨ Brand</span>
+          </div>
+          <div class="tl-team">
+            <div class="tl-team-label">Минимальная команда</div>
+            <ul class="tl-team-list">
+              <li onclick="goToRole('crm')" style="cursor:pointer">CRM / Email-маркетолог <span class="proj-tag staff">штат</span></li>
+              <li onclick="goToRole('performance')" style="cursor:pointer">Performance-маркетолог <span class="proj-tag staff">штат</span></li>
+              <li onclick="goToRole('pmm')" style="cursor:pointer">PMM <span class="proj-tag staff">штат</span></li>
+              <li onclick="goToRole('content-marketer')" style="cursor:pointer">Content-менеджер <span class="proj-tag staff">штат</span></li>
+              <li onclick="goToRole('brand')" style="cursor:pointer">Brand-менеджер <span class="proj-tag optional">опционально</span></li>
+            </ul>
+          </div>
+          <div class="tl-budget">
+            <div class="tl-budget-col"><h5>ФОТ маркетинга</h5><div class="budget-val">500 – 900 тыс/мес</div><div class="budget-note">3–5 штатных</div></div>
+            <div class="tl-budget-col"><h5>Штат</h5><div class="budget-val">3–5 человек</div><div class="budget-note">+ CRM/Email к предыдущим</div></div>
+            <div class="tl-budget-col"><h5>Попроектно</h5><ul><li>Brand-стратегия: 100–300К разово</li><li>Интеграция CRM-системы: 50–200К</li><li>Дизайн / видео: по задачам</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAGE 4 -->
+      <div class="timeline-item" data-color="red">
+        <div class="timeline-dot"></div>
+        <div class="tl-card">
+          <div class="timeline-stage">Стадия 4</div>
+          <div class="timeline-title">Много действий → нет системы роста</div>
+          <div class="timeline-desc">Перестать «пробовать всё» и начать расти системно.</div>
+          <div class="tl-tags"><span class="tl-tag growth" onclick="goToRole('growth-marketer')">📈 Growth</span></div>
+          <div class="tl-team">
+            <div class="tl-team-label">Минимальная команда</div>
+            <ul class="tl-team-list">
+              <li onclick="goToRole('growth-marketer')" style="cursor:pointer">Head of Growth <span class="proj-tag staff">штат</span></li>
+              <li>Аналитик <span class="proj-tag staff">штат</span></li>
+              <li>Performance-команда (2–3 чел.) <span class="proj-tag staff">штат</span></li>
+              <li>CRM / Retention <span class="proj-tag staff">штат</span></li>
+              <li>Content-команда (2 чел.) <span class="proj-tag staff">штат</span></li>
+            </ul>
+          </div>
+          <div class="tl-budget">
+            <div class="tl-budget-col"><h5>ФОТ маркетинга</h5><div class="budget-val">900K – 1.8 млн/мес</div><div class="budget-note">6–9 человек</div></div>
+            <div class="tl-budget-col"><h5>Штат</h5><div class="budget-val">6–9 человек</div><div class="budget-note">Полноценный отдел</div></div>
+            <div class="tl-budget-col"><h5>Попроектно</h5><ul><li>BI / аналитика: настройка 100–300К</li><li>Видео-продакшн: по проектам</li><li>PR-кампании: по задачам</li></ul></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STAGE 5 -->
+      <div class="timeline-item" data-color="yellow">
+        <div class="timeline-dot"></div>
+        <div class="tl-card">
+          <div class="timeline-stage">Стадия 5</div>
+          <div class="timeline-title">Бизнес растёт → начинается хаос</div>
+          <div class="timeline-desc">Без системной архитектуры рост тормозит сам себя. 50–100+ млн выручки.</div>
+          <div class="tl-tags"><span class="tl-tag architecture" onclick="goToRole('cmo')">🧩 CMO</span></div>
+          <div class="tl-team">
+            <div class="tl-team-label">Минимальная команда</div>
+            <ul class="tl-team-list">
+              <li onclick="goToRole('cmo')" style="cursor:pointer">CMO <span class="proj-tag staff">штат</span></li>
+              <li>Head of Growth <span class="proj-tag staff">штат</span></li>
+              <li>Head of Acquisition <span class="proj-tag staff">штат</span></li>
+              <li>Head of Content/Brand <span class="proj-tag staff">штат</span></li>
+              <li>CRM / Retention lead <span class="proj-tag staff">штат</span></li>
+              <li>Аналитическая команда <span class="proj-tag staff">штат</span></li>
+            </ul>
+          </div>
+          <div class="tl-budget">
+            <div class="tl-budget-col"><h5>ФОТ маркетинга</h5><div class="budget-val">2 – 5+ млн/мес</div><div class="budget-note">10–20+ человек</div></div>
+            <div class="tl-budget-col"><h5>Штат</h5><div class="budget-val">10–20+ человек</div><div class="budget-note">Департамент с лидами</div></div>
+            <div class="tl-budget-col"><h5>Попроектно</h5><ul><li>Стратегический консалтинг</li><li>Исследования рынка</li><li>Крупный продакшн</li></ul></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-block">
+      <h3 style="color: var(--accent-growth);">Главная ошибка</h3>
+      <p style="color: var(--text-dim); font-size: 0.88rem; margin-bottom: 14px;">Нанимать «следующую стадию», не закрыв предыдущую:</p>
+      <div class="error-row"><span class="err-action">Лить трафик без позиционирования</span><span class="err-arrow">→</span><span class="err-result">слив бюджета</span></div>
+      <div class="error-row"><span class="err-action">Делать бренд без продукта</span><span class="err-arrow">→</span><span class="err-result">красивая пустота</span></div>
+      <div class="error-row"><span class="err-action">Строить growth без данных</span><span class="err-arrow">→</span><span class="err-result">игра в угадайку</span></div>
+      <div class="logic-list">
+        <p>Простая логика:</p>
+        <div class="logic-row"><span class="la">Упаковать смыслы</span><span class="lw" onclick="goToRole('pmm')" style="color:var(--accent-conversion)">→ PMM</span></div>
+        <div class="logic-row"><span class="la">Усилить поток</span><span class="lw" onclick="goToRole('performance')" style="color:var(--accent-acquisition)">→ Performance</span></div>
+        <div class="logic-row"><span class="la">Удержать деньги</span><span class="lw" onclick="goToRole('crm')" style="color:var(--accent-retention)">→ CRM</span></div>
+        <div class="logic-row"><span class="la">Системно расти</span><span class="lw" onclick="goToRole('growth-marketer')" style="color:var(--accent-growth)">→ Growth</span></div>
+        <div class="logic-row"><span class="la">Собрать систему</span><span class="lw" onclick="goToRole('cmo')" style="color:var(--accent-architecture)">→ CMO</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== ROLES ===================== -->
+  <div class="section" id="sec-roles">
+    <div class="section-title">Роли в маркетинге</div>
+    <div class="section-desc">Каждая конкретная роль: что должен уметь, какие задачи решает, на что смотреть при найме.</div>
+    <div class="role-group-tabs">
+      <div class="role-group-tab active" data-group="acquisition" onclick="switchGroup('acquisition')">🚀 Привлечение</div>
+      <div class="role-group-tab" data-group="conversion" onclick="switchGroup('conversion')">🧠 Конверсия</div>
+      <div class="role-group-tab" data-group="content" onclick="switchGroup('content')">📣 Контент</div>
+      <div class="role-group-tab" data-group="retention" onclick="switchGroup('retention')">🔁 Удержание</div>
+      <div class="role-group-tab" data-group="growth" onclick="switchGroup('growth')">📈 Рост</div>
+      <div class="role-group-tab" data-group="architecture" onclick="switchGroup('architecture')">🧩 Архитектура</div>
+    </div>
+
+    <div class="role-group active" id="group-acquisition">
+      <div class="ind-role" id="role-performance"><div class="ind-role-header"><div><div class="ind-role-name">Performance-маркетолог</div><div class="ind-role-function">Привлечение · платный трафик <span class="salary-tag">100–180К штат · 60–120К проект</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Что должен уметь</h4><ul><li>Настраивать и оптимизировать кампании (Meta, Google, VK, Яндекс)</li><li>Аналитика: UTM, атрибуция, сквозная</li><li>Unit-экономика: CPL → CAC → ROI</li><li>Тестировать гипотезы: креативы, аудитории, посадочные</li><li>Масштабировать без потери эффективности</li></ul></div><div class="ind-role-col col-tasks"><h4>Какие задачи решает</h4><ul><li>Стабильный поток лидов</li><li>Снижение CAC</li><li>Тестирование новых каналов</li><li>Масштабирование бюджета с ROI</li><li>Управление рекламным бюджетом</li></ul></div><div class="ind-role-col col-hire"><h4>На что смотреть</h4><ul><li>Кейсы: «снизил CAC с X до Y»</li><li>Опыт бюджетов 500К+/мес</li><li>Понимание экономики бизнеса</li><li>Работа через гипотезы</li><li>Спроси: «Что сделаешь в первые 2 недели?»</li></ul></div></div></div>
+      <div class="ind-role" id="role-seo"><div class="ind-role-header"><div><div class="ind-role-name">SEO-специалист</div><div class="ind-role-function">Привлечение · органический трафик <span class="salary-tag">80–150К штат · 40–80К проект</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Что должен уметь</h4><ul><li>Семантическое ядро и кластеризация</li><li>Техническая оптимизация: скорость, индексация</li><li>Контент-стратегия для SEO</li><li>Линкбилдинг</li><li>Search Console, Ahrefs / Serpstat</li></ul></div><div class="ind-role-col col-tasks"><h4>Какие задачи решает</h4><ul><li>Рост органического трафика</li><li>Топ поисковой выдачи</li><li>Техническая оптимизация сайта</li><li>Контент-план под органику</li><li>Анализ конкурентов</li></ul></div><div class="ind-role-col col-hire"><h4>На что смотреть</h4><ul><li>Кейсы роста органики с цифрами</li><li>Техническая сторона, не только ключевики</li><li>Опыт в релевантной нише</li><li>Стратегическое мышление</li><li>Спроси: «Какой первый шаг для нашего сайта?»</li></ul></div></div></div>
+      <div class="ind-role" id="role-affiliate"><div class="ind-role-header"><div><div class="ind-role-name">Affiliate / партнёрский менеджер</div><div class="ind-role-function">Привлечение · партнёрский канал <span class="salary-tag">100–160К штат · проектно</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Что должен уметь</h4><ul><li>Строить партнёрскую сеть</li><li>Переговоры и relationship management</li><li>Партнёрские платформы и трекинг</li><li>Мотивационные схемы</li><li>Аналитика партнёрского канала</li></ul></div><div class="ind-role-col col-tasks"><h4>Какие задачи решает</h4><ul><li>Партнёрский канал с нуля</li><li>Поиск и активация партнёров</li><li>Масштабирование продаж через партнёров</li><li>ROI партнёрского канала</li><li>Реферальные программы</li></ul></div><div class="ind-role-col col-hire"><h4>На что смотреть</h4><ul><li>Опыт построения сетей с цифрами</li><li>Количество партнёров и объём продаж</li><li>Навыки переговоров</li><li>Понимание экономики канала</li><li>Спроси: «Как находишь партнёров?»</li></ul></div></div></div>
+    </div>
+
+    <div class="role-group" id="group-conversion">
+      <div class="ind-role" id="role-pmm"><div class="ind-role-header"><div><div class="ind-role-name">Product Marketing Manager (PMM)</div><div class="ind-role-function">Конверсия · позиционирование и упаковка <span class="salary-tag">120–200К штат · 50–100К проект</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Что должен уметь</h4><ul><li>CustDev и JTBD-интервью</li><li>Value proposition под сегмент</li><li>Упаковка: лендинги, презентации, офферы</li><li>Позиционирование и дифференциация</li><li>GTM-стратегия</li><li>Работа с сегментами</li></ul></div><div class="ind-role-col col-tasks"><h4>Какие задачи решает</h4><ul><li>Рост конверсии</li><li>Позиционирование</li><li>Упаковка под сегменты</li><li>Офферы и ценностные предложения</li><li>Запуск продуктов</li><li>Конкурентный анализ</li></ul></div><div class="ind-role-col col-hire"><h4>На что смотреть</h4><ul><li>Кейсы: «конверсия выросла с X% до Y%»</li><li>Понимание «почему покупают» на уровне JTBD</li><li>Портфолио офферов — смыслы, не дизайн</li><li>Работа с сегментами</li><li>Спроси: «Опиши продукт за 30 сек для [сегмент]»</li></ul></div></div></div>
+      <div class="ind-role" id="role-brand"><div class="ind-role-header"><div><div class="ind-role-name">Brand-стратег</div><div class="ind-role-function">Конверсия · бренд и восприятие <span class="salary-tag">100–200К проект</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Что должен уметь</h4><ul><li>Бренд-платформа: миссия, ценности, голос</li><li>Tone of voice и визуальный язык</li><li>Стратегическое позиционирование</li><li>Анализ конкурентов и дифференциация</li><li>Связка бренда с бизнес-метриками</li></ul></div><div class="ind-role-col col-tasks"><h4>Какие задачи решает</h4><ul><li>Бренд-платформа / ребрендинг</li><li>Дифференциация</li><li>Управление восприятием</li><li>Premium-позиционирование</li><li>Гайдлайны для коммуникаций</li></ul></div><div class="ind-role-col col-hire"><h4>На что смотреть</h4><ul><li>Портфолио стратегий, а не логотипов</li><li>Связка бренд → бизнес-результат</li><li>Понимание аудитории</li><li>Опыт в категории</li><li>Спроси: «Чем бренд отличается от айдентики?»</li></ul></div></div></div>
+      <div class="ind-role" id="role-copywriter"><div class="ind-role-header"><div><div class="ind-role-name">Копирайтер / Messaging Strategist</div><div class="ind-role-function">Конверсия · тексты и смыслы <span class="salary-tag">60–120К штат · 20–50К проект</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Что должен уметь</h4><ul><li>Продающие тексты для лендингов, email, рекламы</li><li>Формулирование ценностных предложений</li><li>Адаптация мессаджинга под сегменты</li><li>Разные форматы: web, email, соцсети, скрипты</li><li>A/B тесты текстов</li></ul></div><div class="ind-role-col col-tasks"><h4>Какие задачи решает</h4><ul><li>Тексты для лендингов и сайта</li><li>Email-рассылки</li><li>Рекламные креативы</li><li>Product messaging</li><li>Скрипты и КП</li></ul></div><div class="ind-role-col col-hire"><h4>На что смотреть</h4><ul><li>Портфолио с результатами конверсии</li><li>Понимание аудитории</li><li>Конверсионные, а не «имиджевые» тексты</li><li>Умение работать с продуктом</li><li>Спроси: «Напиши заголовок за 5 минут»</li></ul></div></div></div>
+      <div class="ind-role" id="role-cro"><div class="ind-role-header"><div><div class="ind-role-name">CRO / UX-специалист</div><div class="ind-role-function">Конверсия · оптимизация воронки <span class="salary-tag">120–180К штат · проектно</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Что должен уметь</h4><ul><li>A/B и мультивариантное тестирование</li><li>Heatmaps, session recordings</li><li>Оптимизация воронок и UX</li><li>UX-аудиты и прототипирование</li><li>Hotjar, Optimizely, VWO</li></ul></div><div class="ind-role-col col-tasks"><h4>Какие задачи решает</h4><ul><li>Рост конверсии без роста трафика</li><li>Оптимизация пользовательского пути</li><li>Устранение барьеров покупки</li><li>Тестирование UX-гипотез</li><li>Рост выручки с того же трафика</li></ul></div><div class="ind-role-col col-hire"><h4>На что смотреть</h4><ul><li>Кейсы роста конверсии с методологией</li><li>Опыт A/B тестирования (win rate)</li><li>Инструменты аналитики поведения</li><li>Статистическая грамотность</li><li>Спроси: «Как определяешь, что тестировать?»</li></ul></div></div></div>
+    </div>
+
+    <div class="role-group" id="group-content">
+      <div class="ind-role" id="role-content-marketer"><div class="ind-role-header"><div><div class="ind-role-name">Content-маркетолог</div><div class="ind-role-function">Контент · стратегия и входящий поток <span class="salary-tag">80–150К штат · 30–60К проект</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Что должен уметь</h4><ul><li>Контент-стратегия: рубрики, воронка прогрева</li><li>Превращать экспертизу в контент</li><li>Форматы: тексты, видео, подкасты, кейсы</li><li>Управление каналами: блог, рассылка, YouTube</li><li>Аналитика: какой контент даёт лидов</li></ul></div><div class="ind-role-col col-tasks"><h4>Какие задачи решает</h4><ul><li>Входящий поток заявок</li><li>Прогрев холодной аудитории</li><li>Экспертный образ</li><li>Сокращение цикла сделки</li><li>Контент-план и редполитика</li></ul></div><div class="ind-role-col col-hire"><h4>На что смотреть</h4><ul><li>Стратегия, а не «постить 3 раза в неделю»</li><li>Кейсы по лидам, не по охватам</li><li>Связка контент → заявки</li><li>Релевантный опыт (B2B ≠ lifestyle)</li><li>Спроси: «Покажи план и его результат»</li></ul></div></div></div>
+      <div class="ind-role" id="role-smm"><div class="ind-role-header"><div><div class="ind-role-name">SMM-менеджер</div><div class="ind-role-function">Контент · соцсети <span class="salary-tag">60–120К штат · 25–50К проект</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Что должен уметь</h4><ul><li>Управление: Instagram, Telegram, LinkedIn, TikTok</li><li>Контент под платформу</li><li>Алгоритмы и форматы каждой площадки</li><li>Строить сообщество</li><li>Метрики: вовлечение, рост, конверсия</li></ul></div><div class="ind-role-col col-tasks"><h4>Какие задачи решает</h4><ul><li>Ведение и рост соцсетей</li><li>Вовлечённость аудитории</li><li>Лиды из соцсетей</li><li>Взаимодействие с аудиторией</li><li>Адаптация контента под платформы</li></ul></div><div class="ind-role-col col-hire"><h4>На что смотреть</h4><ul><li>Портфолио аккаунтов с ростом</li><li>Генерация лидов, не только «лента»</li><li>Понимание ваших платформ</li><li>Умение адаптировать, а не копировать</li><li>Спроси: «Как измеряешь успех SMM?»</li></ul></div></div></div>
+      <div class="ind-role" id="role-pr"><div class="ind-role-header"><div><div class="ind-role-name">PR / Media-менеджер</div><div class="ind-role-function">Контент · медийное присутствие <span class="salary-tag">100–180К штат · проектно</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Что должен уметь</h4><ul><li>Работа со СМИ: питчинг, пресс-релизы</li><li>Медийная стратегия</li><li>Кризисные коммуникации</li><li>Организация мероприятий</li><li>Нетворкинг в медиа</li></ul></div><div class="ind-role-col col-tasks"><h4>Какие задачи решает</h4><ul><li>Публикации в целевых СМИ</li><li>Управление репутацией</li><li>Медийное присутствие фаундера</li><li>Конференции и выступления</li><li>Работа с инфлюенсерами</li></ul></div><div class="ind-role-col col-hire"><h4>На что смотреть</h4><ul><li>Контакты в релевантных медиа</li><li>Кейсы публикаций с результатом</li><li>Понимание целевых медиа для ниши</li><li>Умение формулировать news hook</li><li>Спроси: «В какие медиа нас и почему?»</li></ul></div></div></div>
+    </div>
+
+    <div class="role-group" id="group-retention">
+      <div class="ind-role" id="role-crm"><div class="ind-role-header"><div><div class="ind-role-name">CRM / Lifecycle-маркетолог</div><div class="ind-role-function">Удержание · стратегия и автоматизация <span class="salary-tag">120–180К штат · проектно</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Что должен уметь</h4><ul><li>CRM-стратегия: сегменты, триггеры, цепочки</li><li>RFM-сегментация, когорты</li><li>CDP: Mindbox, Braze, Customer.io</li><li>Onboarding-потоки</li><li>Анализ churn и причин оттока</li></ul></div><div class="ind-role-col col-tasks"><h4>Какие задачи решает</h4><ul><li>Рост LTV и повторных покупок</li><li>Снижение churn</li><li>Реактивация базы</li><li>Cross-sell / upsell автоматизация</li><li>Onboarding новых клиентов</li></ul></div><div class="ind-role-col col-hire"><h4>На что смотреть</h4><ul><li>Кейсы роста LTV / retention</li><li>Опыт с CRM/CDP</li><li>RFM, когорты, триггеры</li><li>Системный lifecycle, не разовые рассылки</li><li>Спроси: «Клиент купил и замолчал. Что делаешь?»</li></ul></div></div></div>
+      <div class="ind-role" id="role-email"><div class="ind-role-header"><div><div class="ind-role-name">Email-маркетолог</div><div class="ind-role-function">Удержание · email-канал <span class="salary-tag">80–140К штат · 30–60К проект</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Что должен уметь</h4><ul><li>Email-стратегия и архитектура цепочек</li><li>Welcome, onboarding, retention-цепочки</li><li>Доставляемость: SPF, DKIM, прогрев</li><li>Дизайн и вёрстка писем</li><li>A/B тесты: темы, контент, время</li></ul></div><div class="ind-role-col col-tasks"><h4>Какие задачи решает</h4><ul><li>Email-цепочки (welcome, win-back)</li><li>Промо и дайджесты</li><li>Триггерные письма</li><li>Рост OR, CTR, конверсии</li><li>Персонализация по сегментам</li></ul></div><div class="ind-role-col col-hire"><h4>На что смотреть</h4><ul><li>Кейсы с метриками (OR, CTR, revenue)</li><li>Понимание доставляемости</li><li>Опыт с ESP</li><li>Цепочки, а не разовые рассылки</li><li>Спроси: «Какой OR считаешь хорошим?»</li></ul></div></div></div>
+      <div class="ind-role" id="role-community"><div class="ind-role-header"><div><div class="ind-role-name">Community-менеджер</div><div class="ind-role-function">Удержание · сообщество <span class="salary-tag">70–120К штат</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Что должен уметь</h4><ul><li>Строить и развивать сообщество</li><li>Модерация и активность</li><li>Организация событий</li><li>Работа с UGC</li><li>Амбассадорские программы</li></ul></div><div class="ind-role-col col-tasks"><h4>Какие задачи решает</h4><ul><li>Лояльное сообщество</li><li>Retention через принадлежность</li><li>Сбор обратной связи</li><li>Реферальные программы</li><li>Поддержка через community</li></ul></div><div class="ind-role-col col-hire"><h4>На что смотреть</h4><ul><li>Опыт построения сообществ</li><li>Метрики вовлечённости</li><li>Понимание аудитории</li><li>Умение создавать ценность</li><li>Спроси: «Как удерживаешь активность через 3 месяца?»</li></ul></div></div></div>
+    </div>
+
+    <div class="role-group" id="group-growth">
+      <div class="ind-role" id="role-growth-marketer"><div class="ind-role-header"><div><div class="ind-role-name">Growth-маркетолог / Head of Growth</div><div class="ind-role-function">Рост · система и эксперименты <span class="salary-tag">200–400К штат</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Что должен уметь</h4><ul><li>Вся воронка: acquisition → retention → revenue → referral</li><li>Bottleneck-анализ</li><li>Система экспериментов: гипотеза → тест → вывод</li><li>Данные: SQL, когорты, LTV-моделирование</li><li>Кросс-функциональное управление</li><li>Приоритизация: ICE/RICE</li></ul></div><div class="ind-role-col col-tasks"><h4>Какие задачи решает</h4><ul><li>Система роста (процесс, не разовые тесты)</li><li>Точки роста → масштабирование</li><li>Оптимизация всей воронки</li><li>Growth-модель</li><li>Product-led growth</li><li>Бэклог экспериментов</li></ul></div><div class="ind-role-col col-hire"><h4>На что смотреть</h4><ul><li>Кейсы: «нашёл X → Y% роста»</li><li>Видит всю воронку, не один канал</li><li>SQL, BI, не только GA</li><li>Кросс-функциональный опыт</li><li>Понимание продукта</li><li>Спроси: «Расскажи про провалившийся эксперимент»</li></ul></div></div></div>
+    </div>
+
+    <div class="role-group" id="group-architecture">
+      <div class="ind-role" id="role-cmo"><div class="ind-role-header"><div><div class="ind-role-name">CMO / VP of Marketing</div><div class="ind-role-function">Архитектура · стратегия и система <span class="salary-tag">300–600К+ штат</span></div></div></div><div class="ind-role-grid"><div class="ind-role-col col-skills"><h4>Что должен уметь</h4><ul><li>Маркетинговая архитектура: каналы, продукты, команды</li><li>Управление командой 5–15+</li><li>Связка маркетинга, продукта и бизнес-целей</li><li>P&L маркетинга</li><li>Процессы: OKR, планирование, ревью</li><li>Стратегия: где расти, что убить</li><li>Рынок: конкуренты, тренды</li></ul></div><div class="ind-role-col col-tasks"><h4>Какие задачи решает</h4><ul><li>Хаос → управляемая система</li><li>Синхронизация маркетинга и продукта</li><li>Построение команды</li><li>Бюджеты и прогноз</li><li>Масштабирование: рынки, продукты</li><li>Трансформация маркетинга</li></ul></div><div class="ind-role-col col-hire"><h4>На что смотреть</h4><ul><li>Сборка систем, а не только каналов</li><li>«Маркетинг принёс X»</li><li>Кейсы трансформации</li><li>Управление командой: наём, процессы</li><li>Стратегия → структура → люди</li><li>Спроси: «Что сделаешь за первые 90 дней?»</li></ul></div></div></div>
+    </div>
+  </div>
+
+  <!-- ===================== BUSINESS TYPES ===================== -->
+  <div class="section" id="sec-biz">
+    <div class="section-title">По типу бизнеса</div>
+    <div class="section-desc">Разные бизнесы — разные приоритеты в маркетинге. Выбери свою специфику.</div>
+
+    <div class="biz-tabs">
+      <div class="biz-tab active" data-biz="b2b-services" onclick="switchBiz('b2b-services')">B2B услуги</div>
+      <div class="biz-tab" data-biz="saas" onclick="switchBiz('saas')">SaaS / IT-продукт</div>
+      <div class="biz-tab" data-biz="ecom" onclick="switchBiz('ecom')">E-commerce / D2C</div>
+      <div class="biz-tab" data-biz="education" onclick="switchBiz('education')">Образование / инфобиз</div>
+      <div class="biz-tab" data-biz="local" onclick="switchBiz('local')">Локальный бизнес</div>
+    </div>
+
+    <!-- B2B SERVICES -->
+    <div class="biz-page active" id="biz-b2b-services">
+      <div class="biz-header">
+        <div class="biz-title">B2B услуги</div>
+        <div class="biz-subtitle">Консалтинг, агентства, юридические, IT-аутсорс, интеграторы</div>
+      </div>
+      <div class="biz-grid">
+        <div class="biz-card critical"><h4>Критичные роли</h4><ul>
+          <li><strong>PMM</strong> — позиционирование и упаковка решают всё</li>
+          <li><strong>Content-маркетолог</strong> — длинный цикл = нужен прогрев</li>
+          <li><strong>Копирайтер</strong> — кейсы, КП, thought leadership</li>
+        </ul></div>
+        <div class="biz-card focus"><h4>На чём фокус</h4><ul>
+          <li>Экспертный контент (кейсы, статьи, вебинары)</li>
+          <li>Личный бренд фаундера / эксперта</li>
+          <li>SEO по экспертным запросам</li>
+          <li>Email-нартуринг (длинные цепочки)</li>
+        </ul></div>
+        <div class="biz-card team"><h4>Минимальная команда (старт)</h4><ul>
+          <li>PMM <span class="proj-tag staff">штат</span></li>
+          <li>Content-маркетолог <span class="proj-tag staff">штат</span> или <span class="proj-tag freelance">проект</span></li>
+          <li>SEO <span class="proj-tag freelance">проект</span></li>
+          <li>Копирайтер <span class="proj-tag freelance">проект</span></li>
+        </ul></div>
+        <div class="biz-card mistakes"><h4>Типичные ошибки</h4><ul>
+          <li>Лить платный трафик без экспертного контента</li>
+          <li>Нанимать SMM вместо content-маркетолога</li>
+          <li>Игнорировать personal branding фаундера</li>
+          <li>Пытаться продавать «в лоб» при длинном цикле</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- SAAS -->
+    <div class="biz-page" id="biz-saas">
+      <div class="biz-header">
+        <div class="biz-title">SaaS / IT-продукт</div>
+        <div class="biz-subtitle">Подписочные сервисы, мобильные приложения, платформы</div>
+      </div>
+      <div class="biz-grid">
+        <div class="biz-card critical"><h4>Критичные роли</h4><ul>
+          <li><strong>Growth-маркетолог</strong> — product-led growth, метрики, эксперименты</li>
+          <li><strong>Performance</strong> — масштабирование при понятной unit-экономике</li>
+          <li><strong>CRM / Lifecycle</strong> — onboarding, activation, retention</li>
+        </ul></div>
+        <div class="biz-card focus"><h4>На чём фокус</h4><ul>
+          <li>Активация пользователей (onboarding)</li>
+          <li>Retention и снижение churn</li>
+          <li>Product-led growth (freemium, триалы)</li>
+          <li>Данные и эксперименты</li>
+        </ul></div>
+        <div class="biz-card team"><h4>Минимальная команда (старт)</h4><ul>
+          <li>Growth-маркетолог <span class="proj-tag staff">штат</span></li>
+          <li>Performance <span class="proj-tag staff">штат</span></li>
+          <li>CRM / Email <span class="proj-tag staff">штат</span></li>
+          <li>Content <span class="proj-tag freelance">проект</span></li>
+          <li>CRO / UX <span class="proj-tag freelance">проект</span></li>
+        </ul></div>
+        <div class="biz-card mistakes"><h4>Типичные ошибки</h4><ul>
+          <li>Фокус только на привлечении без retention</li>
+          <li>Нет onboarding-цепочек — юзеры уходят в первую неделю</li>
+          <li>Не считать LTV и payback period</li>
+          <li>Нанимать бренд-маркетолога до product-market fit</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- ECOM -->
+    <div class="biz-page" id="biz-ecom">
+      <div class="biz-header">
+        <div class="biz-title">E-commerce / D2C</div>
+        <div class="biz-subtitle">Интернет-магазины, собственные бренды, маркетплейсы</div>
+      </div>
+      <div class="biz-grid">
+        <div class="biz-card critical"><h4>Критичные роли</h4><ul>
+          <li><strong>Performance</strong> — основной драйвер продаж</li>
+          <li><strong>CRM / Email</strong> — повторные покупки, корзина</li>
+          <li><strong>SEO</strong> — категорийные и товарные страницы</li>
+        </ul></div>
+        <div class="biz-card focus"><h4>На чём фокус</h4><ul>
+          <li>ROAS и unit-экономика по каналам</li>
+          <li>Ретаргетинг и брошенные корзины</li>
+          <li>Email-цепочки: welcome, корзина, повторные</li>
+          <li>SMM для визуальных категорий</li>
+        </ul></div>
+        <div class="biz-card team"><h4>Минимальная команда (старт)</h4><ul>
+          <li>Performance-маркетолог <span class="proj-tag staff">штат</span></li>
+          <li>Email / CRM <span class="proj-tag staff">штат</span></li>
+          <li>SMM / контент <span class="proj-tag staff">штат</span></li>
+          <li>SEO <span class="proj-tag freelance">проект</span></li>
+          <li>Дизайнер креативов <span class="proj-tag freelance">проект</span></li>
+        </ul></div>
+        <div class="biz-card mistakes"><h4>Типичные ошибки</h4><ul>
+          <li>Не считать ROAS по каждому каналу</li>
+          <li>Игнорировать email — самый маржинальный канал</li>
+          <li>Тратить на бренд до стабильного ROI на трафике</li>
+          <li>Не работать с повторными покупками</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- EDUCATION -->
+    <div class="biz-page" id="biz-education">
+      <div class="biz-header">
+        <div class="biz-title">Образование / инфобизнес</div>
+        <div class="biz-subtitle">Онлайн-курсы, школы, менторские программы, обучающие платформы</div>
+      </div>
+      <div class="biz-grid">
+        <div class="biz-card critical"><h4>Критичные роли</h4><ul>
+          <li><strong>Content-маркетолог</strong> — прогрев и доверие через экспертизу</li>
+          <li><strong>Performance</strong> — лидогенерация на вебинары/лид-магниты</li>
+          <li><strong>Копирайтер</strong> — лендинги, email-цепочки, прогревы</li>
+        </ul></div>
+        <div class="biz-card focus"><h4>На чём фокус</h4><ul>
+          <li>Воронка: бесплатный контент → лид-магнит → вебинар → продажа</li>
+          <li>Прогревающие email-цепочки</li>
+          <li>Личный бренд эксперта</li>
+          <li>Retention: доходимость до конца курса, повторные покупки</li>
+        </ul></div>
+        <div class="biz-card team"><h4>Минимальная команда (старт)</h4><ul>
+          <li>Content / SMM <span class="proj-tag staff">штат</span></li>
+          <li>Performance <span class="proj-tag staff">штат</span> или <span class="proj-tag freelance">проект</span></li>
+          <li>Копирайтер <span class="proj-tag freelance">проект</span></li>
+          <li>Email-маркетолог <span class="proj-tag freelance">проект</span></li>
+          <li>Видеограф / монтажёр <span class="proj-tag freelance">проект</span></li>
+        </ul></div>
+        <div class="biz-card mistakes"><h4>Типичные ошибки</h4><ul>
+          <li>Продавать «в лоб» без прогрева</li>
+          <li>Нет email-цепочки после регистрации на бесплатник</li>
+          <li>Игнорировать доходимость и NPS курсов</li>
+          <li>Тратить всё на привлечение, забывая про LTV</li>
+        </ul></div>
+      </div>
+    </div>
+
+    <!-- LOCAL -->
+    <div class="biz-page" id="biz-local">
+      <div class="biz-header">
+        <div class="biz-title">Локальный бизнес</div>
+        <div class="biz-subtitle">Клиники, салоны, рестораны, фитнес, сервис</div>
+      </div>
+      <div class="biz-grid">
+        <div class="biz-card critical"><h4>Критичные роли</h4><ul>
+          <li><strong>Performance</strong> — гео-таргетинг, локальная реклама</li>
+          <li><strong>SMM</strong> — соцсети = витрина и доверие</li>
+          <li><strong>CRM / Email</strong> — удержание и повторные визиты</li>
+        </ul></div>
+        <div class="biz-card focus"><h4>На чём фокус</h4><ul>
+          <li>Локальный SEO (Google Maps, Яндекс.Карты, 2ГИС)</li>
+          <li>Отзывы и рейтинги</li>
+          <li>Соцсети с визуальным контентом</li>
+          <li>CRM: напоминания, программы лояльности</li>
+        </ul></div>
+        <div class="biz-card team"><h4>Минимальная команда (старт)</h4><ul>
+          <li>SMM-менеджер <span class="proj-tag staff">штат</span> или <span class="proj-tag freelance">проект</span></li>
+          <li>Performance (локальная реклама) <span class="proj-tag freelance">проект</span></li>
+          <li>CRM-настройка <span class="proj-tag freelance">проект</span></li>
+          <li>Фотограф / видеограф <span class="proj-tag freelance">проект</span></li>
+        </ul></div>
+        <div class="biz-card mistakes"><h4>Типичные ошибки</h4><ul>
+          <li>Игнорировать карты и отзывы</li>
+          <li>Нанимать дорогого маркетолога вместо SMM + подрядчик</li>
+          <li>Не работать с повторными визитами</li>
+          <li>Тратить на охватную рекламу вместо локальной</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Shmelco &middot; product atelier &middot; Карта маркетинговых ролей</div>
+</div>
+
+<script>
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('sec-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+  function showDiag(card) {
+    const role = card.dataset.role;
+    document.querySelectorAll('.diag-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    document.querySelectorAll('.diag-result').forEach(r => r.classList.remove('visible'));
+    const r = document.getElementById('result-' + role);
+    if (r) { r.classList.add('visible'); setTimeout(() => r.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50); }
+  }
+  function switchGroup(group) {
+    document.querySelectorAll('.role-group-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.role-group').forEach(g => g.classList.remove('active'));
+    document.querySelector('.role-group-tab[data-group="' + group + '"]').classList.add('active');
+    document.getElementById('group-' + group).classList.add('active');
+  }
+  function switchBiz(biz) {
+    document.querySelectorAll('.biz-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.biz-page').forEach(p => p.classList.remove('active'));
+    document.querySelector('.biz-tab[data-biz="' + biz + '"]').classList.add('active');
+    document.getElementById('biz-' + biz).classList.add('active');
+  }
+  const roleToGroup = {
+    'performance': 'acquisition', 'seo': 'acquisition', 'affiliate': 'acquisition',
+    'pmm': 'conversion', 'brand': 'conversion', 'copywriter': 'conversion', 'cro': 'conversion',
+    'content-marketer': 'content', 'smm': 'content', 'pr': 'content',
+    'crm': 'retention', 'email': 'retention', 'community': 'retention',
+    'growth-marketer': 'growth', 'cmo': 'architecture'
+  };
+  function goToRole(roleId) {
+    const group = roleToGroup[roleId];
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelector('[data-tab="roles"]').classList.add('active');
+    document.getElementById('sec-roles').classList.add('active');
+    switchGroup(group);
+    const el = document.getElementById('role-' + roleId);
+    if (el) { setTimeout(() => { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 2000); }, 100); }
+  }
+  let preAnswers = [null, null, null, null];
+  function answerPre(idx, val) {
+    preAnswers[idx] = val;
+    const card = document.querySelectorAll('.pre-card')[idx];
+    card.querySelectorAll('.pre-btn').forEach(b => b.className = 'pre-btn');
+    card.querySelectorAll('.pre-btn')[val ? 0 : 1].classList.add(val ? 'selected-yes' : 'selected-no');
+    if (preAnswers.every(a => a !== null)) {
+      const yeses = preAnswers.filter(a => a).length;
+      const r = document.getElementById('pre-result');
+      let html = '';
+      if (yeses <= 1) {
+        html = '<div class="result-header"><div class="result-icon">🛑</div><div><div class="result-title">Сейчас не нанимай маркетолога</div><div class="result-subtitle">Сначала закрой базу — это сэкономит сотни тысяч</div></div></div>' +
+          '<div style="margin-top:16px"><h4 style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:10px;font-weight:500">Что сделать сначала:</h4><ul style="list-style:none">' +
+          '<li style="font-size:0.85rem;color:var(--text-dim);padding:4px 0 4px 14px;position:relative"><span style="position:absolute;left:0;font-weight:700;color:var(--text-muted)">·</span>Найди 5–10 клиентов вручную и пойми, почему они покупают</li>' +
+          '<li style="font-size:0.85rem;color:var(--text-dim);padding:4px 0 4px 14px;position:relative"><span style="position:absolute;left:0;font-weight:700;color:var(--text-muted)">·</span>Сформулируй оффер в одном предложении</li>' +
+          '<li style="font-size:0.85rem;color:var(--text-dim);padding:4px 0 4px 14px;position:relative"><span style="position:absolute;left:0;font-weight:700;color:var(--text-muted)">·</span>Собери простейшую воронку (лендинг + форма/мессенджер)</li>' +
+          '<li style="font-size:0.85rem;color:var(--text-dim);padding:4px 0 4px 14px;position:relative"><span style="position:absolute;left:0;font-weight:700;color:var(--text-muted)">·</span>Закрой первые продажи сам — это даст данные для будущего маркетолога</li></ul></div>';
+      } else if (yeses <= 2) {
+        html = '<div class="result-header"><div class="result-icon">⚡</div><div><div class="result-title">Тебе нужен не штатный маркетолог, а подрядчик на проект</div><div class="result-subtitle">Разовые задачи закроют фрилансеры — дешевле и быстрее</div></div></div>' +
+          '<div style="margin-top:16px"><h4 style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:10px;font-weight:500">Что заказать проектно:</h4><ul style="list-style:none">' +
+          '<li style="font-size:0.85rem;color:var(--text-dim);padding:4px 0 4px 14px;position:relative"><span style="position:absolute;left:0;font-weight:700;color:var(--text-muted)">·</span>Упаковка позиционирования и лендинг (30–80К разово)</li>' +
+          '<li style="font-size:0.85rem;color:var(--text-dim);padding:4px 0 4px 14px;position:relative"><span style="position:absolute;left:0;font-weight:700;color:var(--text-muted)">·</span>Настройка рекламы для теста гипотез (40–60К/мес)</li>' +
+          '<li style="font-size:0.85rem;color:var(--text-dim);padding:4px 0 4px 14px;position:relative"><span style="position:absolute;left:0;font-weight:700;color:var(--text-muted)">·</span>Тексты и контент-план (15–40К разово)</li></ul></div>' +
+          '<div class="result-warning" style="margin-top:16px"><strong>Когда переходить к найму:</strong> когда появится стабильная модель продаж и ты поймёшь, какую функцию масштабировать.</div>';
+      } else {
+        html = '<div class="result-header"><div class="result-icon">✅</div><div><div class="result-title">Да, пора нанимать маркетолога</div><div class="result-subtitle">У тебя есть база — теперь усиливай</div></div></div>' +
+          '<div style="margin-top:16px"><p style="font-size:0.88rem;color:var(--text-dim);margin-bottom:12px">Переходи в <strong style="cursor:pointer;color:var(--accent-acquisition)" onclick="document.querySelector(\'[data-tab=diagnostic]\').click()">Диагностику</strong> — определи, какая функция сейчас тормозит рост, и узнай, кого именно нанять.</p></div>' +
+          '<div class="result-warning" style="margin-top:12px"><strong>Совет:</strong> в 80% случаев первый маркетолог — это PMM (упаковщик смыслов и позиционирования). Не таргетолог, не SMM. Без упаковки ты будешь платить за трафик, который не конвертируется.</div>';
+      }
+      r.innerHTML = html;
+      r.classList.add('visible');
+      setTimeout(() => r.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    }
+  }
+</script>
 </body>
 </html>
